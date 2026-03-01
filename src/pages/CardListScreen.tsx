@@ -1,37 +1,25 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Header } from "../components/Header";
+import { ConfirmModal } from "../components/Modal";
 import { useCards } from "../hooks/useCards";
 import { useSettings } from "../hooks/useSettings";
-import { generateId, nowISO } from "../utils/dateUtils";
 import type { Card } from "../types";
 
 export function CardListScreen() {
   const navigate = useNavigate();
-  const { cards, loading, saveCard, deleteCard } = useCards();
+  const { cards, loading, deleteCard } = useCards();
   const { settings } = useSettings();
+  const [deleteTarget, setDeleteTarget] = useState<Card | null>(null);
 
   const label = (owner: "A" | "B") =>
     owner === "A" ? settings.memberA : settings.memberB;
 
-  const handleAdd = async () => {
-    const name = window.prompt("カード名を入力してください");
-    if (!name?.trim()) return;
-    const owner = window.confirm(`${settings.memberA}のカードですか？\n（キャンセルで${settings.memberB}）`)
-      ? "A" as const
-      : "B" as const;
-    const card: Card = {
-      id: generateId(),
-      name: name.trim(),
-      owner,
-      createdAt: nowISO(),
-    };
-    await saveCard(card);
-  };
-
-  const handleDelete = async (card: Card) => {
-    if (!window.confirm(`「${card.name}」を削除しますか？`)) return;
-    await deleteCard(card.id);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    await deleteCard(deleteTarget.id);
+    setDeleteTarget(null);
   };
 
   return (
@@ -40,8 +28,8 @@ export function CardListScreen() {
         title="カード管理"
         action={
           <button
-            onClick={handleAdd}
-            className="text-blue-600 font-semibold text-sm"
+            onClick={() => navigate("/cards/new")}
+            className="text-blue-600 font-semibold text-sm py-2 px-2"
           >
             ＋追加
           </button>
@@ -71,8 +59,8 @@ export function CardListScreen() {
                   <p className="text-xs text-gray-500 mt-0.5">{label(card.owner)}のカード</p>
                 </button>
                 <button
-                  onClick={() => handleDelete(card)}
-                  className="text-red-400 text-sm ml-4 px-2 py-1"
+                  onClick={() => setDeleteTarget(card)}
+                  className="text-red-400 text-sm ml-4 py-2 px-3"
                 >
                   削除
                 </button>
@@ -81,6 +69,16 @@ export function CardListScreen() {
           </ul>
         )}
       </div>
+
+      {deleteTarget && (
+        <ConfirmModal
+          message={`「${deleteTarget.name}」を削除しますか？`}
+          confirmLabel="削除"
+          destructive
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </Layout>
   );
 }

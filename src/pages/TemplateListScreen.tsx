@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Header } from "../components/Header";
+import { ConfirmModal } from "../components/Modal";
 import { useTemplates } from "../hooks/useTemplates";
 import { useCards } from "../hooks/useCards";
 import { useSettings } from "../hooks/useSettings";
@@ -10,6 +12,7 @@ import type { TemplateItem } from "../types";
 export function TemplateListScreen() {
   const navigate = useNavigate();
   const { templates, loading, deleteTemplate, updateOrder } = useTemplates();
+  const [deleteTarget, setDeleteTarget] = useState<TemplateItem | null>(null);
   const { cards } = useCards();
   const { settings } = useSettings();
 
@@ -30,9 +33,10 @@ export function TemplateListScreen() {
     navigate(`/templates/${newItem.id}`, { state: { item: newItem, isNew: true } });
   };
 
-  const handleDelete = async (item: TemplateItem) => {
-    if (!window.confirm(`「${item.name}」を削除しますか？`)) return;
-    await deleteTemplate(item.id);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    await deleteTemplate(deleteTarget.id);
+    setDeleteTarget(null);
   };
 
   const handleMoveUp = async (index: number) => {
@@ -115,8 +119,8 @@ export function TemplateListScreen() {
                 </button>
 
                 <button
-                  onClick={() => handleDelete(item)}
-                  className="text-red-400 text-sm px-2 py-1"
+                  onClick={() => setDeleteTarget(item)}
+                  className="text-red-400 text-sm py-2 px-3"
                 >
                   削除
                 </button>
@@ -125,6 +129,16 @@ export function TemplateListScreen() {
           </ul>
         )}
       </div>
+
+      {deleteTarget && (
+        <ConfirmModal
+          message={`「${deleteTarget.name}」を削除しますか？`}
+          confirmLabel="削除"
+          destructive
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </Layout>
   );
 }

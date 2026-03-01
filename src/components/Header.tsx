@@ -13,7 +13,7 @@ export function Header({ title, back = false, action }: HeaderProps) {
       {back && (
         <button
           onClick={() => navigate(-1)}
-          className="mr-3 text-blue-600 text-sm font-medium"
+          className="mr-2 text-blue-600 text-sm font-medium py-2 px-2 -ml-2"
         >
           ← 戻る
         </button>

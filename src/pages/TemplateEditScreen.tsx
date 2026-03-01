@@ -66,7 +66,7 @@ export function TemplateEditScreen() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="例: 家賃"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -78,7 +78,7 @@ export function TemplateEditScreen() {
             onChange={(e) => setAmount(e.target.value)}
             inputMode="numeric"
             placeholder="0"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -128,7 +128,7 @@ export function TemplateEditScreen() {
           <select
             value={cardId ?? ""}
             onChange={(e) => setCardId(e.target.value || null)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
           >
             <option value="">現金</option>
             {cards.map((c) => (

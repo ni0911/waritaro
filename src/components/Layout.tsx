@@ -6,7 +6,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 pt-14">
+    <div className="min-h-screen bg-gray-50 pb-24 pt-14">
       {children}
       <BottomNav />
     </div>

@@ -8,4 +8,12 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* iOS Safe Area 対応 */
+  .safe-area-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .safe-area-top {
+    padding-top: max(0.875rem, env(safe-area-inset-top));
+  }
 }

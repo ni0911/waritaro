@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Header } from "../components/Header";
+import { PromptModal } from "../components/Modal";
 import { useSheet } from "../hooks/useSheets";
 import { useCards } from "../hooks/useCards";
 import { useSettings } from "../hooks/useSettings";
@@ -21,6 +22,7 @@ export function SheetScreen() {
   const [newPayer, setNewPayer] = useState<Member>("A");
   const [newIsSplit, setNewIsSplit] = useState(true);
   const [newCardId, setNewCardId] = useState<string | null>(null);
+  const [editTarget, setEditTarget] = useState<SheetItem | null>(null);
 
   if (loading) {
     return (
@@ -54,13 +56,14 @@ export function SheetScreen() {
     await updateSheet(items);
   };
 
-  const handleEditAmount = async (item: SheetItem) => {
-    const val = window.prompt(`「${item.name}」の金額を入力`, item.amount.toString());
-    if (val === null) return;
+  const handleEditAmountConfirm = async (val: string) => {
+    if (!editTarget) return;
     const num = parseInt(val, 10);
-    if (isNaN(num) || num < 0) { alert("正しい金額を入力してください"); return; }
-    const items = sheet.items.map((i) => (i.id === item.id ? { ...i, amount: num } : i));
-    await updateSheet(items);
+    if (!isNaN(num) && num >= 0) {
+      const items = sheet.items.map((i) => (i.id === editTarget.id ? { ...i, amount: num } : i));
+      await updateSheet(items);
+    }
+    setEditTarget(null);
   };
 
   const handleDelete = async (itemId: string) => {
@@ -170,14 +173,14 @@ export function SheetScreen() {
                       <p className="text-xs text-gray-500">{label(item.payer)}払い · {cardName(item.cardId)}</p>
                     </div>
                     <button
-                      onClick={() => handleEditAmount(item)}
-                      className="text-sm font-semibold text-gray-700 tabular-nums"
+                      onClick={() => setEditTarget(item)}
+                      className="text-base font-semibold text-gray-700 tabular-nums py-1 px-2"
                     >
                       {item.amount.toLocaleString()}円
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="text-red-400 text-xs px-1.5 py-1 ml-1"
+                      className="text-red-400 text-sm py-2 px-3 ml-1"
                     >
                       削除
                     </button>
@@ -197,7 +200,7 @@ export function SheetScreen() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="項目名"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <input
               type="number"
@@ -205,7 +208,7 @@ export function SheetScreen() {
               onChange={(e) => setNewAmount(e.target.value)}
               inputMode="numeric"
               placeholder="金額（円）"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <div className="flex gap-2">
               {(["A", "B"] as Member[]).map((m) => (
@@ -276,6 +279,17 @@ export function SheetScreen() {
           </button>
         )}
       </div>
+
+      {editTarget && (
+        <PromptModal
+          message={`「${editTarget.name}」の金額を入力`}
+          defaultValue={editTarget.amount.toString()}
+          placeholder="金額（円）"
+          inputMode="numeric"
+          onConfirm={handleEditAmountConfirm}
+          onCancel={() => setEditTarget(null)}
+        />
+      )}
     </Layout>
   );
 }
