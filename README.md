@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# ワリタロ会計部
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+同棲2人の毎月の支払いを管理するWebアプリ。
 
-Currently, two official plugins are available:
+## 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **固定費テンプレート** — 毎月繰り返す費用をテンプレート登録し、月次シート作成時に自動コピー
+- **割り勘フラグ** — 項目ごとに「割り勘対象 / 私物（除外）」をワンタップで切り替え
+- **負担比率設定** — 50:50 以外の比率（例: 60:40）にもスライダーで対応
+- **精算計算** — 割り勘対象の合計から各自の負担額・支払済み額を自動計算
+- **LINE共有** — 精算結果をテキスト形式でクリップボードにコピー
+- **クレカ別グループ表示** — カードごとに費用をまとめて引き落とし額を確認しやすく
+- **メンバー名カスタマイズ** — 2人の名前を設定すると全画面・共有テキストに反映
 
-## React Compiler
+## 技術スタック
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| 項目 | 技術 |
+|------|------|
+| フレームワーク | React + TypeScript + Vite |
+| スタイル | Tailwind CSS v3 |
+| ルーティング | react-router-dom v6（HashRouter） |
+| データ保存 | LocalStorage（将来 Supabase 移行可） |
+| デプロイ | GitHub Pages |
 
-## Expanding the ESLint configuration
+## ローカル起動
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ビルド
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
+
+## デプロイ
+
+`main` ブランチへ push すると GitHub Actions が自動でビルド → GitHub Pages にデプロイします。
+
+## 設計メモ
+
+データアクセス層はリポジトリパターンで実装しており、`src/repository/index.ts` の import を差し替えるだけで Supabase に移行できます。
+
+詳細は [`docs/adr/`](docs/adr/) を参照してください。
