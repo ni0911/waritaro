@@ -1,0 +1,33 @@
+<div id="template_item_<%= template_item.id %>"
+     class="bg-white rounded-xl border border-gray-200 px-4 py-3">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="font-medium text-sm"><%= template_item.name %></p>
+      <p class="text-xs text-gray-500 mt-0.5">
+        <%= number_to_currency(template_item.amount, unit: "¥", precision: 0) %>
+        ・<%= template_item.payer %>払い
+        <% if template_item.shared? %>
+          ・A:<%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %>
+          / B:<%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %>
+        <% else %>
+          ・私物
+        <% end %>
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <%= link_to "編集", edit_template_item_path(template_item), class: "text-blue-500 text-sm" %>
+      <%= button_to "削除",
+            template_item_path(template_item),
+            method: :delete,
+            form: { id: "delete_template_item_#{template_item.id}" },
+            class: "hidden" %>
+      <button type="button"
+              data-action="confirm-modal#open"
+              data-confirm-modal-message-param="「<%= template_item.name %>」を削除しますか？"
+              data-confirm-modal-form-param="delete_template_item_<%= template_item.id %>"
+              class="text-red-500 text-sm">
+        削除
+      </button>
+    </div>
+  </div>
+</div>

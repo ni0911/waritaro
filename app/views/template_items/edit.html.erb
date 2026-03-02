@@ -1,0 +1,7 @@
+<div class="px-4 py-6">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "←", template_items_path, class: "text-blue-500" %>
+    <h1 class="text-lg font-bold">テンプレートを編集</h1>
+  </div>
+  <%= render "form", template_item: @template_item, cards: @cards %>
+</div>

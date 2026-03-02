@@ -1,0 +1,19 @@
+<div id="card_<%= card.id %>"
+     class="bg-white rounded-xl border border-gray-200 px-4 py-3 flex items-center justify-between">
+  <p class="font-medium text-sm">💳 <%= card.name %></p>
+  <div class="flex gap-3">
+    <%= link_to "編集", edit_card_path(card), class: "text-blue-500 text-sm" %>
+    <%= button_to "削除",
+          card_path(card),
+          method: :delete,
+          form: { id: "delete_card_#{card.id}" },
+          class: "hidden" %>
+    <button type="button"
+            data-action="confirm-modal#open"
+            data-confirm-modal-message-param="「<%= card.name %>」を削除しますか？"
+            data-confirm-modal-form-param="delete_card_<%= card.id %>"
+            class="text-red-500 text-sm">
+      削除
+    </button>
+  </div>
+</div>

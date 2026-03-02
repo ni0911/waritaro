@@ -1,0 +1,17 @@
+<div class="px-4 py-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-lg font-bold">固定費テンプレート</h1>
+    <%= link_to "＋ 追加", new_template_item_path,
+          class: "bg-blue-500 text-white text-sm px-4 py-2 rounded-xl font-medium" %>
+  </div>
+
+  <% if @template_items.empty? %>
+    <p class="text-center text-gray-400 py-12">テンプレートが登録されていません</p>
+  <% else %>
+    <div id="template_items_list" class="space-y-2">
+      <% @template_items.each do |item| %>
+        <%= render "template_item", template_item: item %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,30 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <title><%= content_for(:title) || "Waritaro Rails" %></title>
+    <title>ワリタロ会計部</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-gray-50 text-gray-900">
+    <div class="mx-auto max-w-md min-h-screen flex flex-col">
+
+      <%# フラッシュメッセージ %>
+      <% if notice %>
+        <div class="bg-green-100 text-green-800 text-sm px-4 py-2 border-b border-green-200">
+          <%= notice %>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="bg-red-100 text-red-800 text-sm px-4 py-2 border-b border-red-200">
+          <%= alert %>
+        </div>
+      <% end %>
+
+      <%# メインコンテンツ %>
+      <main class="flex-1 pb-20">
+        <%= yield %>
+      </main>
+
+      <%# ボトムナビ %>
+      <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 safe-area-inset-bottom z-10">
+        <div class="flex">
+          <%= nav_tab "シート",    root_path,           icon: "📋" %>
+          <%= nav_tab "テンプレ",  template_items_path, icon: "📝" %>
+          <%= nav_tab "カード",    cards_path,          icon: "💳" %>
+          <%= nav_tab "設定",      setting_path,        icon: "⚙️" %>
+        </div>
+      </nav>
+
+    </div>
+
+    <%# 削除確認モーダル %>
+    <%= render "shared/confirm_modal" %>
+
+    <%# 年月入力モーダル %>
+    <%= render "shared/prompt_modal" %>
   </body>
 </html>
