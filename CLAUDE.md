@@ -39,8 +39,7 @@ db/
 ## ドキュメント
 
 - `docs/adr/` — アーキテクチャ決定記録（ADR 0001〜0007）
-- `docs/PLAN.md` — 設計ドキュメント（旧 React SPA）
-- `docs/RAILS_MIGRATION.md` — Rails 移行設計ドキュメント
+- `docs/RAILS_MIGRATION.md` — Rails 移行設計ドキュメント（現行）
 
 ## ADR の記録
 

@@ -1,6 +1,6 @@
 # ADR 0004: 精算計算ロジックの設計（isSplit フラグ方式）
 
-- **ステータス**: Accepted
+- **ステータス**: Superseded by [ADR 0007](0007-shared-account-settlement.md)
 - **作成日**: 2026-03-02
 - **決定者**: ni0911
 

@@ -1,6 +1,6 @@
 # ADR 0002: フロントエンド技術スタックの選定
 
-- **ステータス**: Accepted
+- **ステータス**: Superseded by [ADR 0005](0005-rails-fullstack-migration.md)
 - **作成日**: 2026-03-02
 - **決定者**: ni0911
 

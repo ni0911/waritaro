@@ -1,6 +1,6 @@
 # ADR 0003: デプロイ先に GitHub Pages を選定する
 
-- **ステータス**: Accepted
+- **ステータス**: Superseded by [ADR 0005](0005-rails-fullstack-migration.md)
 - **作成日**: 2026-03-02
 - **決定者**: ni0911
 
