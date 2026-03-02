@@ -1,0 +1,48 @@
+<div class="px-4 py-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-lg font-bold">月次シート</h1>
+    <button type="button"
+            data-action="prompt-modal#open"
+            data-prompt-modal-url-param="<%= sheets_path %>"
+            data-prompt-modal-default-param="<%= Date.today.strftime('%Y-%m') %>"
+            class="bg-blue-500 text-white text-sm px-4 py-2 rounded-xl font-medium">
+      ＋ 新しい月
+    </button>
+  </div>
+
+  <% if @sheets.empty? %>
+    <div class="text-center py-16 text-gray-400">
+      <p class="text-4xl mb-3">📋</p>
+      <p>シートがありません</p>
+      <p class="text-sm mt-1">「＋ 新しい月」から作成してください</p>
+    </div>
+  <% else %>
+    <div class="space-y-2">
+      <% @sheets.each do |sheet| %>
+        <div class="bg-white rounded-xl border border-gray-200 px-4 py-3 flex items-center justify-between">
+          <div>
+            <%= link_to sheet.label, settlement_sheet_path(sheet.year_month),
+                  class: "font-medium text-blue-600" %>
+            <p class="text-xs text-gray-400 mt-0.5"><%= sheet.sheet_items.count %>件の費用</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <%= link_to "開く", settlement_sheet_path(sheet.year_month),
+                  class: "text-blue-500 text-sm" %>
+            <%= button_to "削除",
+                  sheet_path(sheet.year_month),
+                  method: :delete,
+                  form: { id: "delete_sheet_#{sheet.id}" },
+                  class: "hidden" %>
+            <button type="button"
+                    data-action="confirm-modal#open"
+                    data-confirm-modal-message-param="<%= sheet.label %>を削除しますか？"
+                    data-confirm-modal-form-param="delete_sheet_<%= sheet.id %>"
+                    class="text-red-500 text-sm">
+              削除
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

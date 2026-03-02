@@ -1,0 +1,82 @@
+<% @cards_by_id = @cards %>
+
+<div class="px-4 py-4">
+  <%# ヘッダー %>
+  <div class="flex items-center justify-between mb-4">
+    <%= link_to "←", root_path, class: "text-blue-500" %>
+    <h1 class="text-base font-bold"><%= @sheet.label %></h1>
+    <div></div>
+  </div>
+
+  <%# 費用追加フォーム %>
+  <%= turbo_frame_tag "new_sheet_item" do %>
+    <%= render "sheet_items/form", sheet: @sheet %>
+  <% end %>
+
+  <%# 費用リスト %>
+  <div class="mt-4 space-y-2" id="sheet_items_list">
+    <% @sheet.sheet_items.includes(:card).each do |item| %>
+      <%= render "sheet_items/sheet_item", sheet_item: item, sheet: @sheet %>
+    <% end %>
+  </div>
+
+  <%# テンプレート適用ボタン %>
+  <% if TemplateItem.any? %>
+    <div class="mt-4">
+      <%= button_to "テンプレートを適用",
+            apply_template_sheet_path(@sheet.year_month),
+            method: :post,
+            class: "w-full bg-gray-100 text-gray-700 py-2.5 rounded-xl text-sm font-medium" %>
+    </div>
+  <% end %>
+
+  <%# 精算結果 %>
+  <div class="mt-6 bg-white rounded-xl border border-gray-200 p-4">
+    <h2 class="text-sm font-bold text-gray-700 mb-3">精算結果</h2>
+
+    <% member_a = @setting.member_a %>
+    <% member_b = @setting.member_b %>
+
+    <div class="space-y-2 text-sm">
+      <div class="flex justify-between">
+        <span class="text-gray-500">合計精算対象</span>
+        <span class="font-medium"><%= number_to_currency(@result.total_shared_amount, unit: "¥", precision: 0) %></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500"><%= member_a %>の負担</span>
+        <span><%= number_to_currency(@result.burden_a, unit: "¥", precision: 0) %></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500"><%= member_b %>の負担</span>
+        <span><%= number_to_currency(@result.burden_b, unit: "¥", precision: 0) %></span>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-100 mt-3 pt-3 space-y-2">
+      <% [[@result.transfer_a, member_a], [@result.transfer_b, member_b]].each do |transfer, name| %>
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium"><%= name %></span>
+          <% if transfer > 0 %>
+            <span class="text-sm text-red-600 font-bold">→ 共有口座 に <%= number_to_currency(transfer, unit: "¥", precision: 0) %></span>
+          <% elsif transfer < 0 %>
+            <span class="text-sm text-green-600 font-bold">← 共有口座 から <%= number_to_currency(transfer.abs, unit: "¥", precision: 0) %></span>
+          <% else %>
+            <span class="text-sm text-gray-400">精算なし</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# LINE共有 %>
+  <div class="mt-4" data-controller="copy-text">
+    <textarea data-copy-text-target="source" class="hidden" readonly><%= @share_text %></textarea>
+    <button data-action="copy-text#copy"
+            class="w-full bg-green-500 text-white py-3 rounded-xl text-base font-medium">
+      📋 LINE 共有テキストをコピー
+    </button>
+    <p data-copy-text-target="feedback" class="text-center text-sm text-green-600 mt-2 hidden">
+      コピーしました！
+    </p>
+  </div>
+</div>

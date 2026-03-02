@@ -1,0 +1,56 @@
+<div id="sheet_item_<%= sheet_item.id %>"
+     class="bg-white rounded-xl border border-gray-200 px-3 py-2.5">
+  <div class="flex items-start justify-between gap-2">
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-medium truncate"><%= sheet_item.name %></p>
+      <div class="flex items-center gap-1.5 mt-0.5">
+        <%# 金額インライン編集 %>
+        <span data-controller="inline-edit"
+              data-inline-edit-url-value="<%= update_amount_sheet_sheet_item_path(sheet.year_month, sheet_item) %>"
+              data-inline-edit-field-value="sheet_item[amount]">
+          <span data-action="click->inline-edit#startEdit"
+                data-inline-edit-target="display"
+                class="text-sm text-blue-600 cursor-pointer underline decoration-dotted">
+            <%= number_to_currency(sheet_item.amount, unit: "¥", precision: 0) %>
+          </span>
+          <input type="number"
+                 data-inline-edit-target="input"
+                 data-action="blur->inline-edit#submit keydown.enter->inline-edit#submit keydown.escape->inline-edit#cancel"
+                 value="<%= sheet_item.amount %>"
+                 class="hidden w-24 border border-blue-400 rounded-lg px-2 py-0.5 text-sm text-base"
+                 min="0">
+        </span>
+        <span class="text-xs text-gray-400"><%= sheet_item.payer %>払い</span>
+        <% if sheet_item.card %>
+          <span class="text-xs text-gray-400">/<%= sheet_item.card.name %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+      <%# 分担表示 %>
+      <% if sheet_item.shared? %>
+        <span class="text-xs text-gray-500">
+          A:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
+          B:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
+        </span>
+      <% else %>
+        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">私物</span>
+      <% end %>
+
+      <%# 削除ボタン %>
+      <%= button_to "×",
+            sheet_sheet_item_path(sheet.year_month, sheet_item),
+            method: :delete,
+            form: { id: "delete_sheet_item_#{sheet_item.id}" },
+            class: "hidden" %>
+      <button type="button"
+              data-action="confirm-modal#open"
+              data-confirm-modal-message-param="「<%= sheet_item.name %>」を削除しますか？"
+              data-confirm-modal-form-param="delete_sheet_item_<%= sheet_item.id %>"
+              class="text-red-400 text-lg leading-none w-6 h-6 flex items-center justify-center">
+        ×
+      </button>
+    </div>
+  </div>
+</div>
