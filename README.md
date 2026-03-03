@@ -22,9 +22,9 @@
 | スタイル | Tailwind CSS v4 |
 | アセット | Propshaft + Importmap |
 | DB（開発） | SQLite3 |
-| DB（本番） | PostgreSQL（Render.com） |
+| DB（本番） | PostgreSQL（Neon） |
 | テスト | RSpec + FactoryBot + shoulda-matchers |
-| デプロイ | Render.com |
+| デプロイ | Render.com（Web Service） |
 
 ## ローカル起動
 
@@ -43,15 +43,43 @@ bin/dev
 bundle exec rspec
 ```
 
-## デプロイ（Render.com）
+## デプロイ（Render.com + Neon）
 
-1. GitHub にプッシュ
-2. Render ダッシュボード → **New > Blueprint Instance** → リポジトリを選択
-3. `RAILS_MASTER_KEY` を `config/master.key` の内容で手動設定
-4. デプロイ実行
+### 初回セットアップ
 
-`render.yaml` に Web サービスと PostgreSQL の構成が定義されています。
-ビルド時に `bin/render-build.sh` が自動実行され、マイグレーションまで完了します。
+**1. Neon で PostgreSQL を作成**
+
+1. https://neon.tech にアクセスしてサインアップ（GitHub アカウントで可）
+2. New Project を作成
+3. Connection Details から `DATABASE_URL`（`postgresql://...` 形式）をコピー
+
+**2. Render.com で Web Service を作成**
+
+1. https://render.com にサインアップ（GitHub アカウントで可）
+2. **New > Web Service** → GitHub リポジトリを連携
+3. 以下を設定：
+
+| 項目 | 値 |
+|------|------|
+| Runtime | Ruby |
+| Build Command | `./bin/render-build.sh` |
+| Start Command | `bundle exec puma -C config/puma.rb` |
+
+4. **Environment Variables** に以下を追加：
+
+| キー | 値 |
+|------|------|
+| `RAILS_ENV` | `production` |
+| `RAILS_MASTER_KEY` | `config/master.key` の内容 |
+| `DATABASE_URL` | Neon からコピーした接続文字列 |
+
+5. **Create Web Service** でデプロイ開始
+
+ビルド時に `bin/render-build.sh` が自動実行され、`bundle install` → アセットビルド → DB マイグレーションまで完了します。
+
+### 以降のデプロイ
+
+`main` ブランチに `git push` すると自動で再デプロイされます。
 
 ## ドキュメント
 
