@@ -1,46 +1,58 @@
 # ワリタロ会計部
 
-同棲2人の毎月の支払いを管理するWebアプリ。
+同棲2人の毎月の支払いを管理する Web アプリ。
 
 ## 機能
 
-- **固定費テンプレート** — 毎月繰り返す費用をテンプレート登録し、月次シート作成時に自動コピー
-- **割り勘フラグ** — 項目ごとに「割り勘対象 / 私物（除外）」をワンタップで切り替え
-- **負担比率設定** — 50:50 以外の比率（例: 60:40）にもスライダーで対応
-- **精算計算** — 割り勘対象の合計から各自の負担額・支払済み額を自動計算
-- **LINE共有** — 精算結果をテキスト形式でクリップボードにコピー
-- **クレカ別グループ表示** — カードごとに費用をまとめて引き落とし額を確認しやすく
-- **メンバー名カスタマイズ** — 2人の名前を設定すると全画面・共有テキストに反映
+- **月次シート** — 月ごとに費用を記録。テンプレートからワンタップで固定費を一括コピー
+- **項目別負担額** — 費用ごとに「割り勘 / 固定額 / 私物（精算対象外）」を設定
+- **精算計算（共有口座モデル）** — 各自が共有口座に振り込む金額を自動計算
+- **金額インライン編集** — リスト上でタップ → 数値入力 → Enter で即時更新
+- **LINE 共有テキスト** — 精算結果をクリップボードにコピーして LINE で共有
+- **固定費テンプレート** — 毎月繰り返す費用をテンプレート登録・並び替え
+- **カード管理** — クレカを登録し費用に紐付け。カード別の引き落とし額を確認
+- **メンバー名設定** — 2人の名前を設定すると全画面・共有テキストに反映
 
 ## 技術スタック
 
 | 項目 | 技術 |
 |------|------|
-| フレームワーク | React + TypeScript + Vite |
-| スタイル | Tailwind CSS v3 |
-| ルーティング | react-router-dom v6（HashRouter） |
-| データ保存 | LocalStorage（将来 Supabase 移行可） |
-| デプロイ | GitHub Pages |
+| フレームワーク | Ruby on Rails 8.0.2 |
+| フロントエンド | Hotwire（Turbo + Stimulus） |
+| スタイル | Tailwind CSS v4 |
+| アセット | Propshaft + Importmap |
+| DB（開発） | SQLite3 |
+| DB（本番） | PostgreSQL（Render.com） |
+| テスト | RSpec + FactoryBot + shoulda-matchers |
+| デプロイ | Render.com |
 
 ## ローカル起動
 
 ```bash
-npm install
-npm run dev
+bundle install
+bin/rails db:create db:migrate db:seed
+bin/dev
 ```
 
-## ビルド
+`bin/dev` は Rails サーバーと Tailwind CSS の watch を同時起動します。
+ブラウザで http://localhost:3000 にアクセスしてください。
+
+## テスト
 
 ```bash
-npm run build
+bundle exec rspec
 ```
 
-## デプロイ
+## デプロイ（Render.com）
 
-`main` ブランチへ push すると GitHub Actions が自動でビルド → GitHub Pages にデプロイします。
+1. GitHub にプッシュ
+2. Render ダッシュボード → **New > Blueprint Instance** → リポジトリを選択
+3. `RAILS_MASTER_KEY` を `config/master.key` の内容で手動設定
+4. デプロイ実行
 
-## 設計メモ
+`render.yaml` に Web サービスと PostgreSQL の構成が定義されています。
+ビルド時に `bin/render-build.sh` が自動実行され、マイグレーションまで完了します。
 
-データアクセス層はリポジトリパターンで実装しており、`src/repository/index.ts` の import を差し替えるだけで Supabase に移行できます。
+## ドキュメント
 
-詳細は [`docs/adr/`](docs/adr/) を参照してください。
+設計の詳細は [`docs/adr/`](docs/adr/) の ADR（アーキテクチャ決定記録）を参照してください。
