@@ -19,7 +19,7 @@
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">支払い者</label>
     <div class="flex gap-3">
-      <% [["A", "たろう"], ["B", "はなこ"]].each do |value, label| %>
+      <% [["A", @setting.member_a], ["B", @setting.member_b]].each do |value, label| %>
         <label class="flex-1 flex items-center justify-center gap-2 border rounded-xl py-2.5 cursor-pointer
                        <%= template_item.payer == value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-300 text-gray-700' %>">
           <%= f.radio_button :payer, value, class: "sr-only" %>
@@ -33,13 +33,13 @@
     <label class="block text-sm font-medium text-gray-700 mb-2">負担額</label>
     <div class="flex gap-3">
       <div class="flex-1">
-        <label class="text-xs text-gray-500">A（たろう）</label>
+        <label class="text-xs text-gray-500">A（<%= @setting.member_a %>）</label>
         <%= f.number_field :burden_a,
               class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-1",
               min: 0, placeholder: "0" %>
       </div>
       <div class="flex-1">
-        <label class="text-xs text-gray-500">B（はなこ）</label>
+        <label class="text-xs text-gray-500">B（<%= @setting.member_b %>）</label>
         <%= f.number_field :burden_b,
               class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-1",
               min: 0, placeholder: "0" %>

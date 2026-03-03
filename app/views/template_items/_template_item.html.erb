@@ -5,7 +5,7 @@
       <p class="font-medium text-sm"><%= template_item.name %></p>
       <p class="text-xs text-gray-500 mt-0.5">
         <%= number_to_currency(template_item.amount, unit: "¥", precision: 0) %>
-        ・<%= template_item.payer %>払い
+        ・<%= template_item.payer == "A" ? @setting.member_a : @setting.member_b %>払い
         <% if template_item.shared? %>
           ・A:<%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %>
           / B:<%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %>

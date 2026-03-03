@@ -1,6 +1,5 @@
 class SheetsController < ApplicationController
   before_action :set_sheet, only: [:destroy, :settlement, :apply_template]
-  before_action :set_setting, only: [:index, :settlement]
 
   def index
     @sheets = Sheet.order(year_month: :desc)
@@ -46,10 +45,6 @@ class SheetsController < ApplicationController
 
   def set_sheet
     @sheet = Sheet.find_by!(year_month: params[:year_month])
-  end
-
-  def set_setting
-    @setting = Setting.instance
   end
 
   def sheet_params

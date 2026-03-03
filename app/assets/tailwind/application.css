@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* iOS Safe Area */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* iOS Safari ズーム防止: フォームは必ず text-base(16px) 以上 */
+input, select, textarea {
+  font-size: 1rem;
+}

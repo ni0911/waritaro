@@ -20,7 +20,7 @@
                  class="hidden w-24 border border-blue-400 rounded-lg px-2 py-0.5 text-sm text-base"
                  min="0">
         </span>
-        <span class="text-xs text-gray-400"><%= sheet_item.payer %>払い</span>
+        <span class="text-xs text-gray-400"><%= sheet_item.payer == "A" ? @setting.member_a : @setting.member_b %>払い</span>
         <% if sheet_item.card %>
           <span class="text-xs text-gray-400">/<%= sheet_item.card.name %></span>
         <% end %>

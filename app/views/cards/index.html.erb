@@ -5,7 +5,7 @@
           class: "bg-blue-500 text-white text-sm px-4 py-2 rounded-xl font-medium" %>
   </div>
 
-  <% [["A", "たろう", @cards_a], ["B", "はなこ", @cards_b]].each do |owner, name, cards| %>
+  <% [["A", @setting.member_a, @cards_a], ["B", @setting.member_b, @cards_b]].each do |owner, name, cards| %>
     <div class="mb-6">
       <h2 class="text-sm font-semibold text-gray-500 mb-2"><%= name %>のカード</h2>
       <% if cards.empty? %>

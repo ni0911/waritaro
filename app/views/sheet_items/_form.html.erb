@@ -14,7 +14,7 @@
 
   <div class="flex gap-2 items-center">
     <span class="text-sm text-gray-500 shrink-0">支払い:</span>
-    <% [["A", "たろう"], ["B", "はなこ"]].each do |value, label| %>
+    <% [["A", @setting.member_a], ["B", @setting.member_b]].each do |value, label| %>
       <label class="flex items-center gap-1 text-sm cursor-pointer">
         <%= f.radio_button :payer, value %>
         <%= label %>
