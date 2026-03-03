@@ -15,7 +15,7 @@ class CardsController < ApplicationController
     if @card.save
       redirect_to cards_path, notice: "カードを追加しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class CardsController < ApplicationController
     if @card.update(card_params)
       redirect_to cards_path, notice: "カードを更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

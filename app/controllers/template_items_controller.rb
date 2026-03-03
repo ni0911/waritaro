@@ -17,7 +17,7 @@ class TemplateItemsController < ApplicationController
       redirect_to template_items_path, notice: "テンプレートを追加しました"
     else
       @cards = Card.order(:owner, :name)
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -30,7 +30,7 @@ class TemplateItemsController < ApplicationController
       redirect_to template_items_path, notice: "テンプレートを更新しました"
     else
       @cards = Card.order(:owner, :name)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
