@@ -44,3 +44,12 @@ jobs:
       - name: Run RSpec
         run: bundle exec rspec
 
+  deploy:
+    needs: [lint, rspec]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy to Render
+        run: curl -f "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
