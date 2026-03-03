@@ -1,5 +1,5 @@
 class SheetsController < ApplicationController
-  before_action :set_sheet, only: [:destroy, :settlement, :apply_template]
+  before_action :set_sheet, only: [ :destroy, :settlement, :apply_template ]
 
   def index
     @sheets = Sheet.order(year_month: :desc)

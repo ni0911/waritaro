@@ -1,5 +1,5 @@
 class CardsController < ApplicationController
-  before_action :set_card, only: [:edit, :update, :destroy]
+  before_action :set_card, only: [ :edit, :update, :destroy ]
 
   def index
     @cards_a = Card.where(owner: "A").order(:name)

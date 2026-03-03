@@ -40,8 +40,8 @@ class ShareTextService
     lines << ""
 
     lines << "■ 精算"
-    lines << format_transfer(label('A'), result.transfer_a)
-    lines << format_transfer(label('B'), result.transfer_b)
+    lines << format_transfer(label("A"), result.transfer_a)
+    lines << format_transfer(label("B"), result.transfer_b)
 
     lines.join("\n")
   end
@@ -49,7 +49,7 @@ class ShareTextService
   private
 
   def label(member)
-    member == 'A' ? @setting.member_a : @setting.member_b
+    member == "A" ? @setting.member_a : @setting.member_b
   end
 
   def card_name(card_id)
@@ -58,7 +58,7 @@ class ShareTextService
   end
 
   def format_year_month(year_month)
-    year, month = year_month.split('-')
+    year, month = year_month.split("-")
     "#{year}年#{month.to_i}月"
   end
 

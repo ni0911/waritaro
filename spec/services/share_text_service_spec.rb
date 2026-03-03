@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ShareTextService do
   let(:setting) { instance_double('Setting', member_a: 'たろう', member_b: 'はなこ') }
   let(:card_a)  { instance_double('Card', id: 1, name: '楽天カード') }
-  let(:cards)   { [card_a] }
+  let(:cards)   { [ card_a ] }
 
   def make_item(name:, amount:, payer:, burden_a:, burden_b:, card_id: nil)
     instance_double('SheetItem',
@@ -17,7 +17,7 @@ RSpec.describe ShareTextService do
       [
         make_item(name: '家賃', amount: 120000, payer: 'A', burden_a: 80000, burden_b: 40000),
         make_item(name: '食費', amount: 30000,  payer: 'B', burden_a: 15000, burden_b: 15000, card_id: 1),
-        make_item(name: 'A私物', amount: 5000, payer: 'A', burden_a: 0, burden_b: 0),
+        make_item(name: 'A私物', amount: 5000, payer: 'A', burden_a: 0, burden_b: 0)
       ]
     end
 

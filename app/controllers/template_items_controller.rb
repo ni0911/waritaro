@@ -1,5 +1,5 @@
 class TemplateItemsController < ApplicationController
-  before_action :set_item, only: [:edit, :update, :destroy]
+  before_action :set_item, only: [ :edit, :update, :destroy ]
 
   def index
     @template_items = TemplateItem.includes(:card).all

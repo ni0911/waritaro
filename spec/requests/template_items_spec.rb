@@ -91,7 +91,7 @@ RSpec.describe "TemplateItems", type: :request do
     it "sort_order を更新して 200 を返す" do
       item1 = create(:template_item, sort_order: 0)
       item2 = create(:template_item, sort_order: 1)
-      patch reorder_template_items_path, params: { ids: [item2.id, item1.id] }
+      patch reorder_template_items_path, params: { ids: [ item2.id, item1.id ] }
       expect(response).to have_http_status(:ok)
       expect(item1.reload.sort_order).to eq(1)
       expect(item2.reload.sort_order).to eq(0)

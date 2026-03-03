@@ -1,6 +1,6 @@
 class SheetItemsController < ApplicationController
   before_action :set_sheet
-  before_action :set_item, only: [:destroy, :update_burden, :update_amount]
+  before_action :set_item, only: [ :destroy, :update_burden, :update_amount ]
 
   def create
     @sheet_item = @sheet.sheet_items.build(sheet_item_params)

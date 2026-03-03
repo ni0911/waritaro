@@ -18,7 +18,7 @@ RSpec.describe SettlementService do
         items = [
           make_item(payer: 'A', amount: 80000, burden_a: 60000, burden_b: 20000), # 家賃
           make_item(payer: 'B', amount: 30000, burden_a: 15000, burden_b: 15000), # 食費
-          make_item(payer: 'A', amount: 5000,  burden_a: 0,     burden_b: 0),     # 私物
+          make_item(payer: 'A', amount: 5000,  burden_a: 0,     burden_b: 0)     # 私物
         ]
         allow(sheet).to receive(:sheet_items).and_return(items)
       end
@@ -70,7 +70,7 @@ RSpec.describe SettlementService do
       before do
         items = [
           make_item(payer: 'A', amount: 20000, burden_a: 10000, burden_b: 10000),
-          make_item(payer: 'B', amount: 20000, burden_a: 10000, burden_b: 10000),
+          make_item(payer: 'B', amount: 20000, burden_a: 10000, burden_b: 10000)
         ]
         allow(sheet).to receive(:sheet_items).and_return(items)
       end
@@ -98,7 +98,7 @@ RSpec.describe SettlementService do
     context '端数が発生するケース' do
       before do
         items = [
-          make_item(payer: 'A', amount: 10001, burden_a: 5001, burden_b: 5000),
+          make_item(payer: 'A', amount: 10001, burden_a: 5001, burden_b: 5000)
         ]
         allow(sheet).to receive(:sheet_items).and_return(items)
       end
