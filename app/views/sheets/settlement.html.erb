@@ -42,14 +42,6 @@
         <span class="text-gray-500">合計精算対象</span>
         <span class="font-medium"><%= number_to_currency(@result.total_shared_amount, unit: "¥", precision: 0) %></span>
       </div>
-      <div class="flex justify-between">
-        <span class="text-gray-500"><%= member_a %>の負担</span>
-        <span><%= number_to_currency(@result.deposit_a, unit: "¥", precision: 0) %></span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-500"><%= member_b %>の負担</span>
-        <span><%= number_to_currency(@result.deposit_b, unit: "¥", precision: 0) %></span>
-      </div>
     </div>
 
     <div class="border-t border-gray-100 mt-3 pt-3 space-y-2">
