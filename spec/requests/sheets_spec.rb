@@ -48,7 +48,7 @@ RSpec.describe "Sheets", type: :request do
 
   describe "POST /sheets/:year_month/apply_template" do
     let!(:sheet)    { create(:sheet, year_month: "2026-04") }
-    let!(:template) { create(:template_item, name: "家賃", amount: 120000, payer: "A", burden_a: 80000, burden_b: 40000) }
+    let!(:template) { create(:template_item, name: "家賃", amount: 120000, burden_a: 80000, burden_b: 40000) }
 
     it "テンプレートをシートに適用してリダイレクト" do
       expect {

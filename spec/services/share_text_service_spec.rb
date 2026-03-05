@@ -5,9 +5,9 @@ RSpec.describe ShareTextService do
   let(:card_a)  { instance_double('Card', id: 1, name: '楽天カード') }
   let(:cards)   { [ card_a ] }
 
-  def make_item(name:, amount:, payer:, burden_a:, burden_b:, card_id: nil)
+  def make_item(name:, amount:, burden_a:, burden_b:, card_id: nil)
     instance_double('SheetItem',
-      name: name, amount: amount, payer: payer,
+      name: name, amount: amount,
       burden_a: burden_a, burden_b: burden_b, card_id: card_id
     )
   end
@@ -15,9 +15,9 @@ RSpec.describe ShareTextService do
   describe '#generate' do
     let(:items) do
       [
-        make_item(name: '家賃', amount: 120000, payer: 'A', burden_a: 80000, burden_b: 40000),
-        make_item(name: '食費', amount: 30000,  payer: 'B', burden_a: 15000, burden_b: 15000, card_id: 1),
-        make_item(name: 'A私物', amount: 5000, payer: 'A', burden_a: 0, burden_b: 0)
+        make_item(name: '家賃', amount: 120000, burden_a: 80000, burden_b: 40000),
+        make_item(name: '食費', amount: 30000,  burden_a: 15000, burden_b: 15000, card_id: 1),
+        make_item(name: 'A私物', amount: 5000, burden_a: 0, burden_b: 0)
       ]
     end
 
@@ -43,11 +43,11 @@ RSpec.describe ShareTextService do
       expect(text).to include('A私物')
     end
 
-    it 'たろう（A）の振込額が含まれる' do
+    it 'たろう（A）の名前が含まれる' do
       expect(text).to include('たろう')
     end
 
-    it 'はなこ（B）の振込額が含まれる' do
+    it 'はなこ（B）の名前が含まれる' do
       expect(text).to include('はなこ')
     end
 

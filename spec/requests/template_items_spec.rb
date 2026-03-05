@@ -21,7 +21,7 @@ RSpec.describe "TemplateItems", type: :request do
       it "作成してリダイレクト" do
         expect {
           post template_items_path, params: {
-            template_item: { name: "家賃", amount: 120000, payer: "A", burden_a: 80000, burden_b: 40000 }
+            template_item: { name: "家賃", amount: 120000, burden_a: 80000, burden_b: 40000 }
           }
         }.to change(TemplateItem, :count).by(1)
         expect(response).to redirect_to(template_items_path)
@@ -31,7 +31,7 @@ RSpec.describe "TemplateItems", type: :request do
     context "無効なパラメーター" do
       it "422 を返す" do
         post template_items_path, params: {
-          template_item: { name: "", amount: 0, payer: "A", burden_a: 0, burden_b: 0 }
+          template_item: { name: "", amount: 0, burden_a: 0, burden_b: 0 }
         }
         expect(response).to have_http_status(:unprocessable_content)
       end
@@ -52,7 +52,7 @@ RSpec.describe "TemplateItems", type: :request do
     context "有効なパラメーター" do
       it "更新してリダイレクト" do
         patch template_item_path(item), params: {
-          template_item: { name: "新名前", amount: 5000, payer: "B", burden_a: 2500, burden_b: 2500 }
+          template_item: { name: "新名前", amount: 5000, burden_a: 2500, burden_b: 2500 }
         }
         expect(response).to redirect_to(template_items_path)
         expect(item.reload.name).to eq("新名前")
@@ -62,7 +62,7 @@ RSpec.describe "TemplateItems", type: :request do
     context "無効なパラメーター" do
       it "422 を返す" do
         patch template_item_path(item), params: {
-          template_item: { name: "", amount: 0, payer: "A", burden_a: 0, burden_b: 0 }
+          template_item: { name: "", amount: 0, burden_a: 0, burden_b: 0 }
         }
         expect(response).to have_http_status(:unprocessable_content)
       end

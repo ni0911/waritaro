@@ -8,7 +8,7 @@ RSpec.describe "SheetItems", type: :request do
       it "作成して Turbo Stream で応答" do
         expect {
           post sheet_sheet_items_path(sheet.year_month),
-               params: { sheet_item: { name: "食費", amount: 5000, payer: "A", burden_a: 2500, burden_b: 2500 } },
+               params: { sheet_item: { name: "食費", amount: 5000, burden_a: 2500, burden_b: 2500 } },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
         }.to change(SheetItem, :count).by(1)
         expect(response).to have_http_status(:ok)
@@ -19,7 +19,7 @@ RSpec.describe "SheetItems", type: :request do
     context "無効なパラメーター" do
       it "422 を返す" do
         post sheet_sheet_items_path(sheet.year_month),
-             params: { sheet_item: { name: "", amount: 0, payer: "A", burden_a: 0, burden_b: 0 } },
+             params: { sheet_item: { name: "", amount: 0, burden_a: 0, burden_b: 0 } },
              headers: { "Accept" => "text/vnd.turbo-stream.html" }
         expect(response).to have_http_status(:unprocessable_content)
       end
