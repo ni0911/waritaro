@@ -35,12 +35,6 @@
               class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-gray-300 text-gray-600">
         固定額
       </button>
-      <button type="button"
-              data-action="burden-selector#setPrivate"
-              data-burden-selector-target="privateBtn"
-              class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-gray-300 text-gray-600">
-        私物
-      </button>
     </div>
 
     <div data-burden-selector-target="customFields" class="hidden gap-2 mt-2">
@@ -60,7 +54,7 @@
       </div>
     </div>
 
-    <%# 隠しフィールド（割り勘・私物モード時） %>
+    <%# 隠しフィールド（割り勘モード時） %>
     <%= f.hidden_field :burden_a, data: { "burden-selector-target": "hiddenA" }, value: 0 %>
     <%= f.hidden_field :burden_b, data: { "burden-selector-target": "hiddenB" }, value: 0 %>
   </div>

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["splitBtn", "customBtn", "privateBtn", "customFields",
+  static targets = ["splitBtn", "customBtn", "customFields",
                     "burdenA", "burdenB", "hiddenA", "hiddenB"]
   static values  = { amount: Number }
 
@@ -16,7 +16,6 @@ export default class extends Controller {
     this._hideCustom()
     this._activateBtn(this.splitBtnTarget)
     this._deactivateBtn(this.customBtnTarget)
-    this._deactivateBtn(this.privateBtnTarget)
   }
 
   setCustom() {
@@ -24,15 +23,6 @@ export default class extends Controller {
     this._setHidden(0, 0)
     this._activateBtn(this.customBtnTarget)
     this._deactivateBtn(this.splitBtnTarget)
-    this._deactivateBtn(this.privateBtnTarget)
-  }
-
-  setPrivate() {
-    this._setHidden(0, 0)
-    this._hideCustom()
-    this._activateBtn(this.privateBtnTarget)
-    this._deactivateBtn(this.splitBtnTarget)
-    this._deactivateBtn(this.customBtnTarget)
   }
 
   amountValueChanged(value) {

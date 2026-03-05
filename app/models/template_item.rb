@@ -6,10 +6,13 @@ class TemplateItem < ApplicationRecord
   validates :amount,   numericality: { greater_than_or_equal_to: 0 }
   validates :burden_a, numericality: { greater_than_or_equal_to: 0 }
   validates :burden_b, numericality: { greater_than_or_equal_to: 0 }
+  validate  :burden_sum_positive
 
   default_scope { order(:sort_order) }
 
-  def shared?
-    burden_a + burden_b > 0
+  private
+
+  def burden_sum_positive
+    errors.add(:base, "負担額の合計は 1 円以上にしてください") if burden_a.to_i + burden_b.to_i <= 0
   end
 end

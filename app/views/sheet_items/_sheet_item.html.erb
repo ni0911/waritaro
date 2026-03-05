@@ -28,14 +28,10 @@
 
     <div class="flex items-center gap-2 shrink-0">
       <%# 分担表示 %>
-      <% if sheet_item.shared? %>
-        <span class="text-xs text-gray-500">
-          A:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
-          B:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
-        </span>
-      <% else %>
-        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">私物</span>
-      <% end %>
+      <span class="text-xs text-gray-500">
+        A:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
+        B:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
+      </span>
 
       <%# 削除ボタン %>
       <%= button_to "×",

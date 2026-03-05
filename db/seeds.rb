@@ -26,10 +26,9 @@ puts "TemplateItems: #{TemplateItem.count}件"
 sheet = Sheet.find_or_create_by!(year_month: "2026-03")
 
 [
-  { name: "家賃",         amount: 120_000, burden_a: 80_000, burden_b: 40_000, card_id: nil,       is_from_template: true  },
-  { name: "食費",         amount: 48_000,  burden_a: 24_000, burden_b: 24_000, card_id: card_b.id, is_from_template: true  },
-  { name: "光熱費",       amount: 14_500,  burden_a: 7_250,  burden_b: 7_250,  card_id: card_a.id, is_from_template: true  },
-  { name: "たろうの本代", amount: 3_000,   burden_a: 0,      burden_b: 0,      card_id: nil,       is_from_template: false }
+  { name: "家賃",   amount: 120_000, burden_a: 80_000, burden_b: 40_000, card_id: nil,       is_from_template: true },
+  { name: "食費",   amount: 48_000,  burden_a: 24_000, burden_b: 24_000, card_id: card_b.id, is_from_template: true },
+  { name: "光熱費", amount: 14_500,  burden_a: 7_250,  burden_b: 7_250,  card_id: card_a.id, is_from_template: true }
 ].each do |attrs|
   sheet.sheet_items.find_or_create_by!(name: attrs[:name]) do |i|
     i.assign_attributes(attrs)
