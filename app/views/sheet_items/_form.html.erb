@@ -13,14 +13,7 @@
   </div>
 
   <div class="flex gap-2 items-center">
-    <span class="text-sm text-gray-500 shrink-0">支払い:</span>
-    <% [["A", @setting.member_a], ["B", @setting.member_b]].each do |value, label| %>
-      <label class="flex items-center gap-1 text-sm cursor-pointer">
-        <%= f.radio_button :payer, value %>
-        <%= label %>
-      </label>
-    <% end %>
-    <span class="text-sm text-gray-500 shrink-0 ml-2">カード:</span>
+    <span class="text-sm text-gray-500 shrink-0">カード:</span>
     <%= f.collection_select :card_id, Card.order(:owner, :name), :id, :name,
           { include_blank: "現金" },
           class: "flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm" %>

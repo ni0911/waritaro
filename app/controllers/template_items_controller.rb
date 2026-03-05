@@ -57,6 +57,6 @@ class TemplateItemsController < ApplicationController
   end
 
   def template_item_params
-    params.require(:template_item).permit(:name, :amount, :payer, :burden_a, :burden_b, :card_id)
+    params.require(:template_item).permit(:name, :amount, :burden_a, :burden_b, :card_id)
   end
 end

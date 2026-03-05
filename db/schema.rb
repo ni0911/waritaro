@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_000005) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_05_142005) do
   create_table "cards", force: :cascade do |t|
     t.string "name", null: false
     t.string "owner", null: false
@@ -28,7 +28,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_000005) do
   create_table "sheet_items", force: :cascade do |t|
     t.string "name", null: false
     t.integer "amount", default: 0, null: false
-    t.string "payer", null: false
     t.integer "burden_a", default: 0, null: false
     t.integer "burden_b", default: 0, null: false
     t.integer "card_id"
@@ -52,7 +51,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_000005) do
   create_table "template_items", force: :cascade do |t|
     t.string "name", null: false
     t.integer "amount", default: 0, null: false
-    t.string "payer", null: false
     t.integer "burden_a", default: 0, null: false
     t.integer "burden_b", default: 0, null: false
     t.integer "card_id"

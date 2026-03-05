@@ -30,7 +30,6 @@ class SheetsController < ApplicationController
       @sheet.sheet_items.create!(
         name:               tmpl.name,
         amount:             tmpl.amount,
-        payer:              tmpl.payer,
         burden_a:           tmpl.burden_a,
         burden_b:           tmpl.burden_b,
         card_id:            tmpl.card_id,

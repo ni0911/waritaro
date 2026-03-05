@@ -55,7 +55,7 @@ class SheetItemsController < ApplicationController
   end
 
   def sheet_item_params
-    params.require(:sheet_item).permit(:name, :amount, :payer, :burden_a, :burden_b, :card_id)
+    params.require(:sheet_item).permit(:name, :amount, :burden_a, :burden_b, :card_id)
   end
 
   def burden_params
