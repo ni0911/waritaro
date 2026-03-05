@@ -25,6 +25,10 @@ export default class extends Controller {
     this._deactivateBtn(this.splitBtnTarget)
   }
 
+  updateAmount(event) {
+    this.amountValue = parseInt(event.target.value) || 0
+  }
+
   amountValueChanged(value) {
     if (!this.customBtnTarget.classList.contains("border-blue-500")) {
       this.setSplit()
