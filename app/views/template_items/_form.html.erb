@@ -20,13 +20,13 @@
     <label class="block text-sm font-medium text-gray-700 mb-2">負担額</label>
     <div class="flex gap-3">
       <div class="flex-1">
-        <label class="text-xs text-gray-500">A（<%= @setting.member_a %>）</label>
+        <label class="text-xs text-gray-500"><%= @setting.member_a %></label>
         <%= f.number_field :burden_a,
               class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-1",
               min: 0, placeholder: "0" %>
       </div>
       <div class="flex-1">
-        <label class="text-xs text-gray-500">B（<%= @setting.member_b %>）</label>
+        <label class="text-xs text-gray-500"><%= @setting.member_b %></label>
         <%= f.number_field :burden_b,
               class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-1",
               min: 0, placeholder: "0" %>

@@ -5,8 +5,8 @@
       <p class="font-medium text-sm"><%= template_item.name %></p>
       <p class="text-xs text-gray-500 mt-0.5">
         <%= number_to_currency(template_item.amount, unit: "¥", precision: 0) %>
-        ・A:<%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %>
-        / B:<%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %>
+        ・<%= @setting.member_a %>:<%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %>
+        / <%= @setting.member_b %>:<%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %>
       </p>
     </div>
     <div class="flex gap-3">

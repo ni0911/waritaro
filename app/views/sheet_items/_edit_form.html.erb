@@ -41,14 +41,14 @@
 
       <div data-burden-selector-target="customFields" class="hidden gap-2 mt-2">
         <div class="flex-1">
-          <label class="text-xs text-gray-500">A負担</label>
+          <label class="text-xs text-gray-500"><%= @setting.member_a %>負担</label>
           <%= f.number_field :burden_a,
                 data: { "burden-selector-target": "burdenA" },
                 class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-0.5",
                 min: 0 %>
         </div>
         <div class="flex-1">
-          <label class="text-xs text-gray-500">B負担</label>
+          <label class="text-xs text-gray-500"><%= @setting.member_b %>負担</label>
           <%= f.number_field :burden_b,
                 data: { "burden-selector-target": "burdenB" },
                 class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-0.5",

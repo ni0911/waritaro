@@ -29,8 +29,8 @@
       <div class="flex items-center gap-2 shrink-0">
         <%# 分担表示 %>
         <span class="text-xs text-gray-500">
-          A:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
-          B:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
+          <%= @setting.member_a %>:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
+          <%= @setting.member_b %>:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
         </span>
 
         <%# 編集ボタン %>
