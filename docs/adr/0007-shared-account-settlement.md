@@ -1,6 +1,6 @@
 # ADR 0007: 共有口座精算モデルの採用
 
-- **ステータス**: Accepted
+- **ステータス**: Superseded by [ADR 0008](0008-remove-payer-burden-only-settlement.md)
 - **作成日**: 2026-03-02
 - **決定者**: ni0911
 - **Supersedes**: [ADR 0004](0004-settlement-calculation-logic.md)
