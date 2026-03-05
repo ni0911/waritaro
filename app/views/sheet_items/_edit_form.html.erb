@@ -1,0 +1,73 @@
+<%= turbo_frame_tag "sheet_item_#{sheet_item.id}" do %>
+  <%= form_with model: [ sheet, sheet_item ],
+                url: sheet_sheet_item_path(sheet.year_month, sheet_item),
+                method: :patch,
+                class: "bg-white rounded-xl border border-blue-300 p-3 space-y-2" do |f| %>
+    <div data-controller="burden-selector"
+         data-burden-selector-amount-value="<%= sheet_item.amount.to_i %>"
+         data-burden-selector-mode-value="custom">
+      <div class="flex gap-2">
+        <%= f.text_field :name,
+              class: "flex-1 border border-gray-300 rounded-xl px-3 py-2 text-base",
+              placeholder: "費目名" %>
+        <%= f.number_field :amount,
+              data: { action: "input->burden-selector#updateAmount" },
+              class: "w-28 border border-gray-300 rounded-xl px-3 py-2 text-base",
+              min: 0 %>
+      </div>
+
+      <div class="flex gap-2 items-center">
+        <span class="text-sm text-gray-500 shrink-0">カード:</span>
+        <%= f.collection_select :card_id, Card.order(:owner, :name), :id, :name,
+              { include_blank: "現金" },
+              class: "flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm" %>
+      </div>
+
+      <%# 分担モード %>
+      <div class="flex gap-2">
+        <button type="button"
+                data-action="burden-selector#setSplit"
+                data-burden-selector-target="splitBtn"
+                class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-gray-300 text-gray-600">
+          割り勘
+        </button>
+        <button type="button"
+                data-action="burden-selector#setCustom"
+                data-burden-selector-target="customBtn"
+                class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-blue-500 bg-blue-50 text-blue-700">
+          固定額
+        </button>
+      </div>
+
+      <div data-burden-selector-target="customFields" class="hidden gap-2 mt-2">
+        <div class="flex-1">
+          <label class="text-xs text-gray-500">A負担</label>
+          <%= f.number_field :burden_a,
+                data: { "burden-selector-target": "burdenA" },
+                class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-0.5",
+                min: 0 %>
+        </div>
+        <div class="flex-1">
+          <label class="text-xs text-gray-500">B負担</label>
+          <%= f.number_field :burden_b,
+                data: { "burden-selector-target": "burdenB" },
+                class: "w-full border border-gray-300 rounded-xl px-3 py-2 text-base mt-0.5",
+                min: 0 %>
+        </div>
+      </div>
+
+      <%# 隠しフィールド（割り勘モード時） %>
+      <%= f.hidden_field :burden_a, data: { "burden-selector-target": "hiddenA" }, value: sheet_item.burden_a %>
+      <%= f.hidden_field :burden_b, data: { "burden-selector-target": "hiddenB" }, value: sheet_item.burden_b %>
+
+      <div class="flex gap-2">
+        <%= f.submit "保存",
+              class: "flex-1 bg-blue-500 text-white py-2 rounded-xl text-base font-medium" %>
+        <%= link_to "キャンセル",
+              cancel_sheet_sheet_item_path(sheet.year_month, sheet_item),
+              data: { turbo_method: :get, turbo_stream: true },
+              class: "flex-1 text-center bg-gray-100 text-gray-700 py-2 rounded-xl text-base font-medium" %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

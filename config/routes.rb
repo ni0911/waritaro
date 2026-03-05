@@ -6,8 +6,9 @@ Rails.application.routes.draw do
       get  :settlement
       post :apply_template
     end
-    resources :sheet_items, only: [ :create, :destroy ] do
+    resources :sheet_items, only: [ :create, :destroy, :edit, :update ] do
       member do
+        get   :cancel
         patch :update_burden
         patch :update_amount
       end

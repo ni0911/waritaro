@@ -3,10 +3,14 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["splitBtn", "customBtn", "customFields",
                     "burdenA", "burdenB", "hiddenA", "hiddenB"]
-  static values  = { amount: Number }
+  static values  = { amount: Number, mode: String }
 
   connect() {
-    this.setSplit()
+    if (this.modeValue === 'custom') {
+      this.setCustom()
+    } else {
+      this.setSplit()
+    }
   }
 
   setSplit() {

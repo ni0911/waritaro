@@ -61,4 +61,37 @@ RSpec.describe "SheetItems", type: :request do
       expect(item.reload.amount).to eq(8000)
     end
   end
+
+  describe "GET /sheets/:year_month/sheet_items/:id/edit" do
+    let(:item) { create(:sheet_item, sheet: sheet) }
+
+    it "200 を返す" do
+      get edit_sheet_sheet_item_path(sheet.year_month, item)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /sheets/:year_month/sheet_items/:id" do
+    let(:item) { create(:sheet_item, sheet: sheet, name: "食費", amount: 5000, burden_a: 2500, burden_b: 2500) }
+
+    context "有効なパラメーター" do
+      it "更新して Turbo Stream で応答" do
+        patch sheet_sheet_item_path(sheet.year_month, item),
+              params: { sheet_item: { name: "外食", amount: 6000, burden_a: 3000, burden_b: 3000 } },
+              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+        expect(response).to have_http_status(:ok)
+        expect(item.reload.name).to eq("外食")
+        expect(item.reload.amount).to eq(6000)
+      end
+    end
+
+    context "無効なパラメーター" do
+      it "422 を返す" do
+        patch sheet_sheet_item_path(sheet.year_month, item),
+              params: { sheet_item: { name: "", amount: 5000, burden_a: 2500, burden_b: 2500 } },
+              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
 end

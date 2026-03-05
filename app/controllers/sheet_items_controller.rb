@@ -1,6 +1,6 @@
 class SheetItemsController < ApplicationController
   before_action :set_sheet
-  before_action :set_item, only: [ :destroy, :update_burden, :update_amount ]
+  before_action :set_item, only: [ :destroy, :edit, :update, :cancel, :update_burden, :update_amount ]
 
   def create
     @sheet_item = @sheet.sheet_items.build(sheet_item_params)
@@ -19,6 +19,34 @@ class SheetItemsController < ApplicationController
         locals: { sheet: @sheet, sheet_item: @sheet_item }),
         status: :unprocessable_content
     end
+  end
+
+  def edit
+    render layout: false
+  end
+
+  def update
+    if @sheet_item.update(sheet_item_update_params)
+      render turbo_stream: turbo_stream.replace(
+        "sheet_item_#{@sheet_item.id}",
+        partial: "sheet_items/sheet_item",
+        locals: { sheet_item: @sheet_item, sheet: @sheet }
+      )
+    else
+      render turbo_stream: turbo_stream.replace(
+        "sheet_item_#{@sheet_item.id}",
+        partial: "sheet_items/edit_form",
+        locals: { sheet_item: @sheet_item, sheet: @sheet }
+      ), status: :unprocessable_content
+    end
+  end
+
+  def cancel
+    render turbo_stream: turbo_stream.replace(
+      "sheet_item_#{@sheet_item.id}",
+      partial: "sheet_items/sheet_item",
+      locals: { sheet_item: @sheet_item, sheet: @sheet }
+    )
   end
 
   def destroy
@@ -55,6 +83,10 @@ class SheetItemsController < ApplicationController
   end
 
   def sheet_item_params
+    params.require(:sheet_item).permit(:name, :amount, :burden_a, :burden_b, :card_id)
+  end
+
+  def sheet_item_update_params
     params.require(:sheet_item).permit(:name, :amount, :burden_a, :burden_b, :card_id)
   end
 
