@@ -68,5 +68,16 @@ RSpec.describe "Sheets", type: :request do
       get settlement_sheet_path("2026-03")
       expect(response).to have_http_status(:ok)
     end
+
+    it "費目別内訳にアイテム名と金額が表示される" do
+      sheet = create(:sheet, year_month: "2026-06")
+      create(:sheet_item, sheet: sheet, name: "家賃", amount: 60000, burden_a: 40000, burden_b: 20000)
+      create(:sheet_item, sheet: sheet, name: "食費", amount: 5000, burden_a: 2500, burden_b: 2500)
+      Setting.instance
+      get settlement_sheet_path("2026-06")
+      expect(response.body).to include("費目別内訳")
+      expect(response.body).to include("家賃")
+      expect(response.body).to include("食費")
+    end
   end
 end

@@ -20,9 +20,10 @@ class SheetsController < ApplicationController
   end
 
   def settlement
-    @result = SettlementService.new(@sheet).calculate
-    @cards  = Card.all.index_by(&:id)
-    @share_text = ShareTextService.new(@sheet, @setting, Card.all).generate
+    @sheet_items = @sheet.sheet_items.includes(:card)
+    @result      = SettlementService.new(@sheet).calculate
+    @cards       = Card.all.index_by(&:id)
+    @share_text  = ShareTextService.new(@sheet, @setting, Card.all).generate
   end
 
   def apply_template
