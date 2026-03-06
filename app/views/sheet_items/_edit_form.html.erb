@@ -20,7 +20,7 @@
         <span class="text-sm text-gray-500 shrink-0">カード:</span>
         <%= f.collection_select :card_id, Card.order(:owner, :name), :id, :name,
               { include_blank: "現金" },
-              class: "flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm" %>
+              class: "flex-1 border border-gray-300 rounded-lg px-2 py-2.5" %>
       </div>
 
       <%# 分担モード %>
@@ -28,13 +28,13 @@
         <button type="button"
                 data-action="burden-selector#setSplit"
                 data-burden-selector-target="splitBtn"
-                class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-gray-300 text-gray-600">
+                class="flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold border-gray-200 text-gray-500">
           割り勘
         </button>
         <button type="button"
                 data-action="burden-selector#setCustom"
                 data-burden-selector-target="customBtn"
-                class="flex-1 py-1.5 rounded-lg border text-sm font-medium border-blue-500 bg-blue-50 text-blue-700">
+                class="flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold border-blue-500 bg-blue-50 text-blue-700">
           固定額
         </button>
       </div>

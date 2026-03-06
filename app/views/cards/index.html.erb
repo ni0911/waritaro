@@ -11,7 +11,7 @@
       <% if cards.empty? %>
         <p class="text-gray-400 text-sm py-3">登録なし</p>
       <% else %>
-        <div class="space-y-2">
+        <div class="space-y-3">
           <% cards.each do |card| %>
             <%= render "card", card: card %>
           <% end %>

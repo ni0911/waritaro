@@ -17,7 +17,7 @@
                    data-inline-edit-target="input"
                    data-action="blur->inline-edit#submit keydown.enter->inline-edit#submit keydown.escape->inline-edit#cancel"
                    value="<%= sheet_item.amount %>"
-                   class="hidden w-24 border border-blue-400 rounded-lg px-2 py-0.5 text-sm text-base"
+                   class="hidden w-24 border border-blue-400 rounded-lg px-2 py-0.5 text-base"
                    min="0">
           </span>
           <% if sheet_item.card %>
@@ -28,16 +28,16 @@
 
       <div class="flex items-center gap-2 shrink-0">
         <%# 分担表示 %>
-        <span class="text-xs text-gray-500">
-          <%= @setting.member_a %>:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %>
-          <%= @setting.member_b %>:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %>
+        <span class="text-xs text-gray-500 leading-tight text-right">
+          <span class="block"><%= @setting.member_a %>:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %></span>
+          <span class="block"><%= @setting.member_b %>:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %></span>
         </span>
 
         <%# 編集ボタン %>
         <%= link_to "✎",
               edit_sheet_sheet_item_path(sheet.year_month, sheet_item),
               data: { turbo_frame: "sheet_item_#{sheet_item.id}" },
-              class: "text-blue-400 text-base leading-none w-6 h-6 flex items-center justify-center" %>
+              class: "text-blue-400 text-base leading-none w-10 h-10 flex items-center justify-center" %>
 
         <%# 削除ボタン %>
         <%= button_to "×",
@@ -49,7 +49,7 @@
                 data-action="confirm-modal#open"
                 data-confirm-modal-message-param="「<%= sheet_item.name %>」を削除しますか？"
                 data-confirm-modal-form-param="delete_sheet_item_<%= sheet_item.id %>"
-                class="text-red-400 text-lg leading-none w-6 h-6 flex items-center justify-center">
+                class="text-red-400 text-lg leading-none w-10 h-10 flex items-center justify-center">
           ×
         </button>
       </div>

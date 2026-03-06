@@ -8,7 +8,7 @@
   <% if @template_items.empty? %>
     <p class="text-center text-gray-400 py-12">テンプレートが登録されていません</p>
   <% else %>
-    <div id="template_items_list" class="space-y-2">
+    <div id="template_items_list" class="space-y-3">
       <% @template_items.each do |item| %>
         <%= render "template_item", template_item: item %>
       <% end %>
