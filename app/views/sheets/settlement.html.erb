@@ -14,7 +14,7 @@
   <% end %>
 
   <%# 費用リスト %>
-  <div class="mt-4 space-y-2" id="sheet_items_list">
+  <div class="mt-4 space-y-3" id="sheet_items_list">
     <% @sheet_items.each do |item| %>
       <%= render "sheet_items/sheet_item", sheet_item: item, sheet: @sheet %>
     <% end %>
@@ -46,7 +46,7 @@
 
     <div class="border-t border-gray-100 mt-3 pt-3 space-y-2">
       <% [[@result.deposit_a, member_a], [@result.deposit_b, member_b]].each do |deposit, name| %>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between flex-wrap gap-1">
           <span class="text-sm font-medium"><%= name %></span>
           <% if deposit > 0 %>
             <span class="text-sm text-red-600 font-bold">→ 共有口座 に <%= number_to_currency(deposit, unit: "¥", precision: 0) %></span>
