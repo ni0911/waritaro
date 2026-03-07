@@ -7,7 +7,7 @@
        data-burden-selector-amount-value="<%= sheet_item.amount.to_i %>">
     <div class="flex gap-3">
       <%= f.text_field :name,
-            class: "flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            class: "flex-1 min-w-0 border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
             placeholder: "費目名" %>
       <%= f.number_field :amount,
             data: { action: "input->burden-selector#updateAmount" },

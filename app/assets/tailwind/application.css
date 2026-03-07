@@ -9,3 +9,8 @@
 input, select, textarea {
   font-size: 1rem;
 }
+
+/* turbo-frame は JS 注入前でも必ずブロック要素として扱う */
+turbo-frame {
+  display: block;
+}

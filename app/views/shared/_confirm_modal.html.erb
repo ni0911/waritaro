@@ -1,8 +1,9 @@
 <%# 削除確認モーダル — confirm_modal Stimulus コントローラーで制御 %>
 <div data-confirm-modal-target="backdrop"
-     class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+     class="hidden fixed inset-0 bg-black/50 z-50"
      id="confirm-modal">
-  <div class="bg-white rounded-2xl shadow-xl mx-4 w-full max-w-sm p-6">
+  <div class="flex min-h-full items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm min-w-0 p-6">
     <p class="text-base font-medium text-gray-800 mb-6"
        data-confirm-modal-target="message">本当に削除しますか？</p>
     <div class="flex gap-3">
@@ -18,5 +19,6 @@
         削除
       </button>
     </div>
+  </div>
   </div>
 </div>

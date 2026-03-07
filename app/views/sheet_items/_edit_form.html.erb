@@ -8,7 +8,7 @@
          data-burden-selector-mode-value="custom">
       <div class="flex gap-2">
         <%= f.text_field :name,
-              class: "flex-1 border border-gray-300 rounded-xl px-3 py-2 text-base",
+              class: "flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-base",
               placeholder: "費目名" %>
         <%= f.number_field :amount,
               data: { action: "input->burden-selector#updateAmount" },
