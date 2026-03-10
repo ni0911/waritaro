@@ -1,0 +1,45 @@
+<div class="px-4 py-6 max-w-md mx-auto">
+  <h1 class="text-lg font-bold mb-6">アカウント作成</h1>
+
+  <% if flash[:alert] %>
+    <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-lg"><%= flash[:alert] %></p>
+  <% end %>
+
+  <%= form_with model: @user, url: registrations_path, class: "space-y-4" do |f| %>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+      <%= f.email_field :email_address,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            placeholder: "example@email.com",
+            autocomplete: "username" %>
+      <% if @user.errors[:email_address].any? %>
+        <p class="text-red-500 text-sm mt-1"><%= @user.errors[:email_address].first %></p>
+      <% end %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+      <%= f.password_field :password,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            autocomplete: "new-password" %>
+      <% if @user.errors[:password].any? %>
+        <p class="text-red-500 text-sm mt-1"><%= @user.errors[:password].first %></p>
+      <% end %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード（確認）</label>
+      <%= f.password_field :password_confirmation,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            autocomplete: "new-password" %>
+    </div>
+
+    <%= f.submit "アカウントを作成する",
+          class: "w-full bg-blue-500 text-white py-3.5 rounded-xl text-base font-semibold mt-2" %>
+  <% end %>
+
+  <p class="mt-4 text-center text-sm text-gray-500">
+    すでにアカウントをお持ちの方は
+    <%= link_to "ログイン", new_session_path, class: "text-blue-500 underline" %>
+  </p>
+</div>

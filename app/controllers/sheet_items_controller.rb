@@ -75,7 +75,7 @@ class SheetItemsController < ApplicationController
   private
 
   def set_sheet
-    @sheet = Sheet.find_by!(year_month: params[:sheet_year_month])
+    @sheet = current_setting.sheets.find_by!(year_month: params[:sheet_year_month])
   end
 
   def set_item

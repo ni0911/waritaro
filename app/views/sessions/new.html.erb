@@ -1,0 +1,37 @@
+<div class="px-4 py-6 max-w-md mx-auto">
+  <h1 class="text-lg font-bold mb-6">ログイン</h1>
+
+  <% if flash[:alert] %>
+    <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-lg"><%= flash[:alert] %></p>
+  <% end %>
+
+  <%= form_with url: session_path, class: "space-y-4" do |form| %>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+      <%= form.email_field :email_address,
+            required: true,
+            autofocus: true,
+            autocomplete: "username",
+            placeholder: "example@email.com",
+            value: params[:email_address],
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+      <%= form.password_field :password,
+            required: true,
+            autocomplete: "current-password",
+            maxlength: 72,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50" %>
+    </div>
+
+    <%= form.submit "ログイン",
+          class: "w-full bg-blue-500 text-white py-3.5 rounded-xl text-base font-semibold mt-2" %>
+  <% end %>
+
+  <p class="mt-4 text-center text-sm text-gray-500">
+    アカウントをお持ちでない方は
+    <%= link_to "新規登録", new_registration_path, class: "text-blue-500 underline" %>
+  </p>
+</div>

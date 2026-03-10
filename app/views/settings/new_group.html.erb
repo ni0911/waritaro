@@ -1,0 +1,38 @@
+<div class="px-4 py-6 max-w-md mx-auto">
+  <h1 class="text-lg font-bold mb-2">グループを作成する</h1>
+  <p class="text-sm text-gray-500 mb-6">2人分の名前を入力してグループを作りましょう。作成後に招待コードが発行されます。</p>
+
+  <% if flash[:alert] %>
+    <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-lg"><%= flash[:alert] %></p>
+  <% end %>
+
+  <%= form_with model: @setting, url: create_group_setting_path, method: :post, class: "space-y-4" do |f| %>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">メンバーA の名前（自分）</label>
+      <%= f.text_field :member_a,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            placeholder: "たろう" %>
+      <% if @setting.errors[:member_a].any? %>
+        <p class="text-red-500 text-sm mt-1"><%= @setting.errors[:member_a].first %></p>
+      <% end %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">メンバーB の名前（パートナー）</label>
+      <%= f.text_field :member_b,
+            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            placeholder: "はなこ" %>
+      <% if @setting.errors[:member_b].any? %>
+        <p class="text-red-500 text-sm mt-1"><%= @setting.errors[:member_b].first %></p>
+      <% end %>
+    </div>
+
+    <%= f.submit "グループを作成する",
+          class: "w-full bg-blue-500 text-white py-3.5 rounded-xl text-base font-semibold mt-2" %>
+  <% end %>
+
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-500">招待コードをお持ちの方は</p>
+    <%= link_to "招待コードで参加する", join_setting_path, class: "text-blue-500 underline text-sm" %>
+  </div>
+</div>

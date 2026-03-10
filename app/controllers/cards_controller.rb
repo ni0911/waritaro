@@ -2,16 +2,16 @@ class CardsController < ApplicationController
   before_action :set_card, only: [ :edit, :update, :destroy ]
 
   def index
-    @cards_a = Card.where(owner: "A").order(:name)
-    @cards_b = Card.where(owner: "B").order(:name)
+    @cards_a = current_setting.cards.where(owner: "A").order(:name)
+    @cards_b = current_setting.cards.where(owner: "B").order(:name)
   end
 
   def new
-    @card = Card.new
+    @card = current_setting.cards.new
   end
 
   def create
-    @card = Card.new(card_params)
+    @card = current_setting.cards.new(card_params)
     if @card.save
       redirect_to cards_path, notice: "カードを追加しました"
     else
@@ -40,7 +40,7 @@ class CardsController < ApplicationController
   private
 
   def set_card
-    @card = Card.find(params[:id])
+    @card = current_setting.cards.find(params[:id])
   end
 
   def card_params
