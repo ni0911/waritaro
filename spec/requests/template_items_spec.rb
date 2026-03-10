@@ -1,9 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe "TemplateItems", type: :request do
+  let(:setting) { create(:setting) }
+  let(:user) { create(:user, setting: setting) }
+  before { sign_in(user) }
+
   describe "GET /template_items" do
     it "200 を返す" do
-      create_list(:template_item, 3)
+      create_list(:template_item, 3, setting: setting)
       get template_items_path
       expect(response).to have_http_status(:ok)
     end
@@ -40,14 +44,14 @@ RSpec.describe "TemplateItems", type: :request do
 
   describe "GET /template_items/:id/edit" do
     it "200 を返す" do
-      item = create(:template_item)
+      item = create(:template_item, setting: setting)
       get edit_template_item_path(item)
       expect(response).to have_http_status(:ok)
     end
   end
 
   describe "PATCH /template_items/:id" do
-    let(:item) { create(:template_item, name: "旧名前") }
+    let(:item) { create(:template_item, name: "旧名前", setting: setting) }
 
     context "有効なパラメーター" do
       it "更新してリダイレクト" do
@@ -71,7 +75,7 @@ RSpec.describe "TemplateItems", type: :request do
 
   describe "DELETE /template_items/:id" do
     it "削除して Turbo Stream で応答" do
-      item = create(:template_item)
+      item = create(:template_item, setting: setting)
       expect {
         delete template_item_path(item), headers: { "Accept" => "text/vnd.turbo-stream.html" }
       }.to change(TemplateItem, :count).by(-1)
@@ -79,7 +83,7 @@ RSpec.describe "TemplateItems", type: :request do
     end
 
     it "削除してリダイレクト（通常）" do
-      item = create(:template_item)
+      item = create(:template_item, setting: setting)
       expect {
         delete template_item_path(item)
       }.to change(TemplateItem, :count).by(-1)
@@ -89,8 +93,8 @@ RSpec.describe "TemplateItems", type: :request do
 
   describe "PATCH /template_items/reorder" do
     it "sort_order を更新して 200 を返す" do
-      item1 = create(:template_item, sort_order: 0)
-      item2 = create(:template_item, sort_order: 1)
+      item1 = create(:template_item, sort_order: 0, setting: setting)
+      item2 = create(:template_item, sort_order: 1, setting: setting)
       patch reorder_template_items_path, params: { ids: [ item2.id, item1.id ] }
       expect(response).to have_http_status(:ok)
       expect(item1.reload.sort_order).to eq(1)

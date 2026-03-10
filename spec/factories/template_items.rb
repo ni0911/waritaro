@@ -6,5 +6,6 @@ FactoryBot.define do
     burden_b { 5000 }
     card { nil }
     sort_order { 0 }
+    association :setting
   end
 end

@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe "SheetItems", type: :request do
-  let(:sheet) { create(:sheet, year_month: "2026-03") }
+  let(:setting) { create(:setting) }
+  let(:user) { create(:user, setting: setting) }
+  let(:sheet) { create(:sheet, year_month: "2026-03", setting: setting) }
+  before { sign_in(user) }
 
   describe "POST /sheets/:year_month/sheet_items" do
     context "有効なパラメーター" do

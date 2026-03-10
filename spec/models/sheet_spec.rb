@@ -5,7 +5,7 @@ RSpec.describe Sheet, type: :model do
     subject { build(:sheet) }
 
     it { is_expected.to validate_presence_of(:year_month) }
-    it { is_expected.to validate_uniqueness_of(:year_month).ignoring_case_sensitivity }
+    it { is_expected.to validate_uniqueness_of(:year_month).scoped_to(:setting_id).ignoring_case_sensitivity }
 
     it 'YYYY-MM形式を受け付ける' do
       sheet = build(:sheet, year_month: '2026-03')
