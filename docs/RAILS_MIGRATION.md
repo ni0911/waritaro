@@ -6,45 +6,69 @@
 
 React + TypeScript + LocalStorage SPA を Ruby on Rails フルスタック構成に全面移行する。
 Rails スキル習得を主目的とし、データ永続化と仕様改善を同時に実施する。
+その後、認証機能（Rails 8 generate authentication）とマルチテナント対応（グループモデル）を追加した。
 
 ## 技術スタック
 
 | 項目 | 採用技術 |
 |------|---------|
 | フレームワーク | Rails 8 |
+| 認証 | Rails 8 標準認証（generate authentication / bcrypt） |
 | フロントエンド | Hotwire（Turbo + Stimulus）|
-| CSS | Tailwind CSS |
+| CSS | Tailwind CSS v4 |
 | JS バンドル | Importmap |
 | アセットパイプライン | Propshaft |
 | DB（開発） | SQLite3 |
 | DB（本番） | PostgreSQL |
-| デプロイ | Render.com（無料プラン）|
+| デプロイ | Render.com |
 
 ## データモデル
 
 ### ER 図
 
 ```
-Setting (1レコード)
-Card  ←── TemplateItem
-Card  ←── SheetItem ──→ Sheet
-TemplateItem ←── SheetItem (template_item_id, 参照のみ)
+User ──── Setting（グループ）
+          │
+          ├── Card  ←── TemplateItem
+          ├── Card  ←── SheetItem ──→ Sheet
+          └── TemplateItem ←── SheetItem（template_item_id、参照のみ）
+
+Session ──→ User
 ```
 
 ### モデル定義
 
-#### Setting
+#### User
 
 ```ruby
-# member_a: string (デフォルト: "たろう")
-# member_b: string (デフォルト: "はなこ")
+# email_address:  string  NOT NULL UNIQUE
+# password_digest: string  NOT NULL
+# setting_id:     integer (nullable, FK → settings)
+```
+
+#### Session
+
+```ruby
+# user_id:    integer NOT NULL FK → users
+# ip_address: string
+# user_agent: string
+```
+
+#### Setting（グループ）
+
+```ruby
+# member_a:    string  NOT NULL default: "たろう"
+# member_b:    string  NOT NULL default: "はなこ"
+# owner_id:    integer (nullable, FK → users) ... グループ作成者
+# invite_code: string  UNIQUE               ... 招待用コード（hex 8バイト）
 ```
 
 #### Card
 
 ```ruby
-# name:  string  NOT NULL
-# owner: string  NOT NULL ("A" or "B")
+# name:       string  NOT NULL
+# owner:      string  NOT NULL ("A" or "B")
+# setting_id: integer NOT NULL FK → settings
 ```
 
 #### TemplateItem
@@ -52,17 +76,18 @@ TemplateItem ←── SheetItem (template_item_id, 参照のみ)
 ```ruby
 # name:       string  NOT NULL
 # amount:     integer NOT NULL default: 0
-# payer:      string  NOT NULL ("A" or "B")
 # burden_a:   integer NOT NULL default: 0
 # burden_b:   integer NOT NULL default: 0
 # card_id:    integer (nullable, FK → cards)
 # sort_order: integer NOT NULL default: 0
+# setting_id: integer NOT NULL FK → settings
 ```
 
 #### Sheet
 
 ```ruby
-# year_month: string NOT NULL UNIQUE (例: "2026-03")
+# year_month: string  NOT NULL UNIQUE per setting_id (例: "2026-03")
+# setting_id: integer NOT NULL FK → settings
 ```
 
 #### SheetItem
@@ -70,7 +95,6 @@ TemplateItem ←── SheetItem (template_item_id, 参照のみ)
 ```ruby
 # name:               string  NOT NULL
 # amount:             integer NOT NULL default: 0
-# payer:              string  NOT NULL ("A" or "B")
 # burden_a:           integer NOT NULL default: 0
 # burden_b:           integer NOT NULL default: 0
 # card_id:            integer (nullable, FK → cards)
@@ -109,6 +133,21 @@ transfer_b = sum(burden_b) - sum(amount where payer="B" かつ精算対象)
 
 ```ruby
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
+
+  # ユーザー登録
+  get  "register", to: "registrations#new",    as: :new_registration
+  post "register", to: "registrations#create", as: :registrations
+
+  # グループ作成・参加
+  resource :setting, only: [:show, :update] do
+    get  :new_group,    on: :member
+    post :create_group, on: :member
+    get  :join,         on: :member
+    post :join,         on: :member
+  end
+
   root "sheets#index"
 
   resources :sheets, param: :year_month, only: [:index, :create, :destroy] do
@@ -116,10 +155,11 @@ Rails.application.routes.draw do
       get  :settlement
       post :apply_template
     end
-    resources :sheet_items, only: [:create, :destroy] do
+    resources :sheet_items, only: [:create, :destroy, :edit, :update] do
       member do
-        patch :update_burden  # burden_a / burden_b の更新
-        patch :update_amount  # 金額のインライン編集
+        get   :cancel
+        patch :update_burden
+        patch :update_amount
       end
     end
   end
@@ -131,9 +171,28 @@ Rails.application.routes.draw do
   end
 
   resources :cards, only: [:index, :new, :create, :edit, :update, :destroy]
-  resource :setting, only: [:show, :update]
 end
 ```
+
+## 認証・グループフロー
+
+```
+/register     → RegistrationsController#new / create
+/session/new  → SessionsController#new（ログイン）
+/session      → SessionsController#create / destroy
+
+登録後:
+  setting_id: nil → /setting/new_group へリダイレクト
+  /setting/new_group  → グループ作成フォーム
+  /setting/create_group → setting 作成、user.setting = @setting
+  /setting/join       → 招待コード入力
+  （POST）            → invite_code で setting 検索、user.setting = @setting
+```
+
+ApplicationController の before_action:
+1. `require_authentication` — 未ログインは `/session/new` へ
+2. `require_group_membership` — グループ未参加は `/setting/new_group` へ
+3. `set_setting` — `@setting = current_user.setting`
 
 ## Stimulus コントローラー
 
@@ -178,15 +237,6 @@ bundle exec rails db:migrate
 | `DATABASE_URL` | Render PostgreSQL から自動設定 |
 | `RAILS_LOG_TO_STDOUT` | `1` |
 
-## 移行元ファイル参照
-
-| 既存ファイル | 参照目的 |
-|-----------|---------|
-| `src/services/settlementService.ts` | 精算ロジックの移植元 |
-| `src/services/shareTextService.ts` | 共有テキスト生成の移植元 |
-| `src/pages/SheetScreen.tsx` | カード別グループ化ロジックの参考 |
-| `src/types/index.ts` | 全データモデルの定義 |
-
 ## ADR 一覧
 
 | ADR | タイトル | ステータス |
@@ -198,3 +248,6 @@ bundle exec rails db:migrate
 | [0005](adr/0005-rails-fullstack-migration.md) | Rails フルスタック移行 | Accepted |
 | [0006](adr/0006-per-item-burden-model.md) | 項目別負担額モデル | Accepted |
 | [0007](adr/0007-shared-account-settlement.md) | 共有口座精算モデル | Accepted |
+| [0008](adr/0008-remove-payer-burden-only-settlement.md) | 払い手＋負担額精算モデルの削除 | Accepted |
+| [0009](adr/0009-mobile-ux-improvements.md) | モバイル UX 改善（iOS Safari 対応） | Accepted |
+| [0010](adr/0010-authentication-and-group-model.md) | 認証基盤導入とグループモデル設計 | Accepted |
