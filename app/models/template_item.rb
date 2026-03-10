@@ -1,4 +1,5 @@
 class TemplateItem < ApplicationRecord
+  belongs_to :setting
   belongs_to :card, optional: true
   has_many :sheet_items, dependent: :nullify
 

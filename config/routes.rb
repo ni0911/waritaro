@@ -1,4 +1,19 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
+
+  # ユーザー登録
+  get  "register",  to: "registrations#new",    as: :new_registration
+  post "register",  to: "registrations#create", as: :registrations
+
+  # グループ作成・参加
+  resource :setting, only: [ :show, :update ] do
+    get  :new_group,    on: :member
+    post :create_group, on: :member
+    get  :join,         on: :member
+    post :join,         on: :member
+  end
+
   root "sheets#index"
 
   resources :sheets, param: :year_month, only: [ :index, :create, :destroy ] do
@@ -22,7 +37,6 @@ Rails.application.routes.draw do
   end
 
   resources :cards, only: [ :index, :new, :create, :edit, :update, :destroy ]
-  resource :setting, only: [ :show, :update ]
 
   # PWA関連（デフォルトのまま）
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

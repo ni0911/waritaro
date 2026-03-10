@@ -10,12 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_05_142005) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_09_150137) do
   create_table "cards", force: :cascade do |t|
     t.string "name", null: false
     t.string "owner", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "setting_id", null: false
+    t.index ["setting_id"], name: "index_cards_on_setting_id"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -23,6 +34,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_05_142005) do
     t.string "member_b", default: "はなこ", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invite_code"
+    t.bigint "owner_id"
+    t.index ["invite_code"], name: "index_settings_on_invite_code", unique: true
   end
 
   create_table "sheet_items", force: :cascade do |t|
@@ -45,7 +59,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_05_142005) do
     t.string "year_month", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["year_month"], name: "index_sheets_on_year_month", unique: true
+    t.integer "setting_id", null: false
+    t.index ["setting_id"], name: "index_sheets_on_setting_id"
+    t.index ["year_month", "setting_id"], name: "index_sheets_on_year_month_and_setting_id", unique: true
   end
 
   create_table "template_items", force: :cascade do |t|
@@ -57,11 +73,29 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_05_142005) do
     t.integer "sort_order", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "setting_id", null: false
     t.index ["card_id"], name: "index_template_items_on_card_id"
+    t.index ["setting_id"], name: "index_template_items_on_setting_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "setting_id"
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["setting_id"], name: "index_users_on_setting_id"
+  end
+
+  add_foreign_key "cards", "settings"
+  add_foreign_key "sessions", "users"
+  add_foreign_key "settings", "users", column: "owner_id"
   add_foreign_key "sheet_items", "cards"
   add_foreign_key "sheet_items", "sheets"
   add_foreign_key "sheet_items", "template_items"
+  add_foreign_key "sheets", "settings"
   add_foreign_key "template_items", "cards"
+  add_foreign_key "template_items", "settings"
+  add_foreign_key "users", "settings"
 end
