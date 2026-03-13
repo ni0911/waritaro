@@ -28,7 +28,7 @@ class AddSettingIdToAppTables < ActiveRecord::Migration[8.0]
 
     # Step 5: year_month の unique index を setting_id スコープに変更
     remove_index :sheets, :year_month
-    add_index :sheets, [:year_month, :setting_id], unique: true
+    add_index :sheets, [ :year_month, :setting_id ], unique: true
   end
 
   def down
@@ -36,7 +36,7 @@ class AddSettingIdToAppTables < ActiveRecord::Migration[8.0]
     remove_foreign_key :sheets,         :settings
     remove_foreign_key :template_items, :settings
 
-    remove_index  :sheets, [:year_month, :setting_id]
+    remove_index  :sheets, [ :year_month, :setting_id ]
     add_index     :sheets, :year_month, unique: true
 
     remove_reference :cards,          :setting
