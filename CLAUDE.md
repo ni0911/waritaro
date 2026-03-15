@@ -84,3 +84,29 @@ db/
 - コミットメッセージ: `prefix: 日本語メッセージ`（feat / fix / docs / chore / ci など）
 - コミットできる粒度になったらコミットすること。ただし**テストが失敗している状態ではコミット禁止**
 - コミット時は `/smart-commit` スキルを使うこと
+
+## 本番安全マイグレーションの原則
+
+### 原則 1: マイグレーション内でモデルクラスを使わない
+
+**禁止:** `Setting.first`, `User.create!` など ActiveRecord クラスメソッド
+**理由:** スキーマ変更中のモデルキャッシュが不安定になる。`before_create` などコールバックの副作用も起きる。
+**代替:** `execute("SELECT id FROM settings ORDER BY id LIMIT 1")` など raw SQL のみ使う
+
+### 原則 2: NOT NULL 追加は「追加 → UPDATE → 検証 → NOT NULL」の4ステップ
+
+```
+add_reference ..., null: true   # 1. nullable で追加
+execute("UPDATE ...")           # 2. 全行の NULL を埋める
+（COUNT で NULL 残存を検証）     # 3. 明示的に検証して raise
+change_column_null ..., false   # 4. NOT NULL 制約
+```
+
+NULL が残った状態で `change_column_null` を呼ぶと PostgreSQL がエラーを返し、
+トランザクションが中断状態になり、以降の全 SQL が `PG::InFailedSqlTransaction` で失敗する。
+
+### 原則 3: preDeployCommand でマイグレーション失敗時のダウンタイムを防ぐ
+
+`render.yaml` に `preDeployCommand: bundle exec rails db:migrate` を設定すること。
+entrypoint で `db:migrate` を実行する構成では、マイグレーション失敗 = 新コンテナ起動失敗 = ダウンタイム発生になる。
+preDeployCommand ならマイグレーション失敗時にデプロイが中断され、旧コンテナが継続稼働する。
