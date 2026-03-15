@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_09_150137) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_15_125400) do
   create_table "cards", force: :cascade do |t|
     t.string "name", null: false
     t.string "owner", null: false
@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_09_150137) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["card_id"], name: "index_sheet_items_on_card_id"
+    t.index ["sheet_id", "template_item_id"], name: "index_sheet_items_on_sheet_id_and_template_item_id", unique: true, where: "template_item_id IS NOT NULL"
     t.index ["sheet_id"], name: "index_sheet_items_on_sheet_id"
     t.index ["template_item_id"], name: "index_sheet_items_on_template_item_id"
   end

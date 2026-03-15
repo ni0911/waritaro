@@ -7,6 +7,7 @@ class SheetItem < ApplicationRecord
   validates :amount,   numericality: { greater_than_or_equal_to: 0 }
   validates :burden_a, numericality: { greater_than_or_equal_to: 0 }
   validates :burden_b, numericality: { greater_than_or_equal_to: 0 }
+  validates :template_item_id, uniqueness: { scope: :sheet_id }, allow_nil: true
   validate  :burden_sum_positive
 
   private

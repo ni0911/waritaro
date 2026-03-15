@@ -26,6 +26,7 @@
       <%= button_to "テンプレートを適用",
             apply_template_sheet_path(@sheet.year_month),
             method: :post,
+            data: { turbo_submits_with: "適用中…" },
             class: "w-full bg-gray-100 text-gray-700 py-2.5 rounded-xl text-sm font-medium" %>
     </div>
   <% end %>

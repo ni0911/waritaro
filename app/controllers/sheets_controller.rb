@@ -27,18 +27,29 @@ class SheetsController < ApplicationController
   end
 
   def apply_template
-    current_setting.template_items.each do |tmpl|
-      @sheet.sheet_items.create!(
-        name:               tmpl.name,
-        amount:             tmpl.amount,
-        burden_a:           tmpl.burden_a,
-        burden_b:           tmpl.burden_b,
-        card_id:            tmpl.card_id,
-        is_from_template:   true,
-        template_item_id:   tmpl.id
-      )
+    existing_template_ids = @sheet.sheet_items.where.not(template_item_id: nil).pluck(:template_item_id).to_set
+
+    new_items = current_setting.template_items
+      .reject { |tmpl| existing_template_ids.include?(tmpl.id) }
+      .map { |tmpl|
+        {
+          sheet_id:         @sheet.id,
+          name:             tmpl.name,
+          amount:           tmpl.amount,
+          burden_a:         tmpl.burden_a,
+          burden_b:         tmpl.burden_b,
+          card_id:          tmpl.card_id,
+          is_from_template: true,
+          template_item_id: tmpl.id
+        }
+      }
+
+    if new_items.any?
+      SheetItem.insert_all!(new_items)
+      redirect_to settlement_sheet_path(@sheet.year_month), notice: "テンプレートを適用しました"
+    else
+      redirect_to settlement_sheet_path(@sheet.year_month), alert: "テンプレートは既に適用済みです"
     end
-    redirect_to settlement_sheet_path(@sheet.year_month), notice: "テンプレートを適用しました"
   end
 
   private
