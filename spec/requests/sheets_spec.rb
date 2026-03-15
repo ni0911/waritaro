@@ -63,6 +63,27 @@ RSpec.describe "Sheets", type: :request do
       expect(item.name).to eq("家賃")
       expect(item.is_from_template).to be true
     end
+
+    it "複数テンプレートがある場合、すべて適用する" do
+      create(:template_item, name: "食費", amount: 30000, burden_a: 15000, burden_b: 15000, setting: setting)
+      expect {
+        post apply_template_sheet_path("2026-04")
+      }.to change(SheetItem, :count).by(2)
+    end
+
+    it "2回呼んでも SheetItem が重複しない" do
+      post apply_template_sheet_path("2026-04")
+      expect {
+        post apply_template_sheet_path("2026-04")
+      }.not_to change(SheetItem, :count)
+    end
+
+    it "既に適用済みのときは alert でリダイレクト" do
+      post apply_template_sheet_path("2026-04")
+      post apply_template_sheet_path("2026-04")
+      expect(response).to redirect_to(settlement_sheet_path("2026-04"))
+      expect(flash[:alert]).to match(/既に適用済み/)
+    end
   end
 
   describe "GET /sheets/:year_month/settlement" do
