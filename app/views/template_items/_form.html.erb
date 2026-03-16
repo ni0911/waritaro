@@ -9,30 +9,36 @@
     <% end %>
   </div>
 
-  <div>
+  <div data-controller="burden-auto-calc">
     <label class="block text-sm font-medium text-gray-700 mb-1">金額（円）</label>
     <%= f.number_field :amount,
           class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
-          min: 0, placeholder: "120000" %>
-  </div>
+          min: 0, placeholder: "120000",
+          data: { burden_auto_calc_target: "amount", action: "input->burden-auto-calc#calcBurdenB" } %>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">負担額</label>
+    <label class="block text-sm font-medium text-gray-700 mb-2 mt-4">負担額</label>
     <div class="flex gap-3">
       <div class="flex-1">
         <label class="text-xs text-gray-500"><%= @setting.member_a %></label>
         <%= f.number_field :burden_a,
               class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50 mt-1",
-              min: 0, placeholder: "0" %>
+              min: 0, placeholder: "0",
+              data: { burden_auto_calc_target: "burdenA", action: "input->burden-auto-calc#calcBurdenB" } %>
       </div>
       <div class="flex-1">
         <label class="text-xs text-gray-500"><%= @setting.member_b %></label>
         <%= f.number_field :burden_b,
               class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50 mt-1",
-              min: 0, placeholder: "0" %>
+              min: 0, placeholder: "0",
+              data: { burden_auto_calc_target: "burdenB", action: "input->burden-auto-calc#calcBurdenA" } %>
       </div>
     </div>
-    <p class="text-xs text-gray-400 mt-1">片方を 0 にすると一方が全額負担になります</p>
+    <p class="text-xs text-gray-400 mt-1">金額か片方の負担額を入力すると、もう片方が自動計算されます</p>
+    <% if template_item.errors[:base].any? %>
+      <% template_item.errors[:base].each do |msg| %>
+        <p class="text-red-500 text-sm mt-1"><%= msg %></p>
+      <% end %>
+    <% end %>
   </div>
 
   <div>

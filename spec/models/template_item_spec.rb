@@ -14,7 +14,18 @@ RSpec.describe TemplateItem, type: :model do
     end
 
     it 'burden_b だけ > 0 のとき有効' do
-      item = build(:template_item, burden_a: 0, burden_b: 5000)
+      item = build(:template_item, amount: 5000, burden_a: 0, burden_b: 5000)
+      expect(item).to be_valid
+    end
+
+    it 'burden_a + burden_b が amount と一致しないとき無効' do
+      item = build(:template_item, amount: 10000, burden_a: 3000, burden_b: 3000)
+      expect(item).not_to be_valid
+      expect(item.errors[:base]).to be_present
+    end
+
+    it 'burden_a + burden_b が amount と一致するとき有効' do
+      item = build(:template_item, amount: 10000, burden_a: 3000, burden_b: 7000)
       expect(item).to be_valid
     end
   end

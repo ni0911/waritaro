@@ -39,6 +39,22 @@ RSpec.describe "TemplateItems", type: :request do
         }
         expect(response).to have_http_status(:unprocessable_content)
       end
+
+      it "負担額が両方 0 のときエラーメッセージを表示する" do
+        post template_items_path, params: {
+          template_item: { name: "家賃", amount: 120000, burden_a: 0, burden_b: 0 }
+        }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("負担額の合計は 1 円以上にしてください")
+      end
+
+      it "負担額の合計が金額と一致しないときエラーメッセージを表示する" do
+        post template_items_path, params: {
+          template_item: { name: "家賃", amount: 120000, burden_a: 50000, burden_b: 50000 }
+        }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("負担額の合計が金額と一致しません")
+      end
     end
   end
 
@@ -69,6 +85,14 @@ RSpec.describe "TemplateItems", type: :request do
           template_item: { name: "", amount: 0, burden_a: 0, burden_b: 0 }
         }
         expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "負担額が両方 0 のときエラーメッセージを表示する" do
+        patch template_item_path(item), params: {
+          template_item: { name: "家賃", amount: 120000, burden_a: 0, burden_b: 0 }
+        }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("負担額の合計は 1 円以上にしてください")
       end
     end
   end

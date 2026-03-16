@@ -8,6 +8,7 @@ class TemplateItem < ApplicationRecord
   validates :burden_a, numericality: { greater_than_or_equal_to: 0 }
   validates :burden_b, numericality: { greater_than_or_equal_to: 0 }
   validate  :burden_sum_positive
+  validate  :burden_sum_equals_amount
 
   default_scope { order(:sort_order) }
 
@@ -15,5 +16,12 @@ class TemplateItem < ApplicationRecord
 
   def burden_sum_positive
     errors.add(:base, "負担額の合計は 1 円以上にしてください") if burden_a.to_i + burden_b.to_i <= 0
+  end
+
+  def burden_sum_equals_amount
+    return if burden_a.to_i + burden_b.to_i == 0
+    unless burden_a.to_i + burden_b.to_i == amount.to_i
+      errors.add(:base, "負担額の合計が金額と一致しません")
+    end
   end
 end
