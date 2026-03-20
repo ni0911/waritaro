@@ -1,17 +1,17 @@
-<div class="px-4 py-6">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-lg font-bold">カード管理</h1>
+<div class="wt-page">
+  <div class="wt-page-header">
+    <h1 class="wt-page-title">カード管理</h1>
     <%= link_to "＋ 追加", new_card_path,
-          class: "bg-blue-500 text-white text-sm px-4 py-2 rounded-xl font-medium" %>
+          class: "wt-btn wt-btn-primary wt-btn-sm" %>
   </div>
 
   <% [["A", @setting.member_a, @cards_a], ["B", @setting.member_b, @cards_b]].each do |owner, name, cards| %>
     <div class="mb-6">
-      <h2 class="text-sm font-semibold text-gray-500 mb-2"><%= name %>のカード</h2>
+      <p class="wt-section-label"><%= name %>のカード</p>
       <% if cards.empty? %>
-        <p class="text-gray-400 text-sm py-3">登録なし</p>
+        <p class="text-sm py-3" style="color: var(--text-3);">登録なし</p>
       <% else %>
-        <div class="space-y-3">
+        <div class="space-y-2">
           <% cards.each do |card| %>
             <%= render "card", card: card %>
           <% end %>

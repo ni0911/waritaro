@@ -1,7 +1,7 @@
-<div class="px-4 py-6">
+<div class="wt-page">
   <div class="flex items-center gap-3 mb-6">
-    <%= link_to "←", cards_path, class: "text-blue-500" %>
-    <h1 class="text-lg font-bold">カードを追加</h1>
+    <%= link_to "← 戻る", cards_path, class: "wt-back-btn" %>
+    <h1 class="wt-page-title">カードを追加</h1>
   </div>
   <%= render "form", card: @card %>
 </div>

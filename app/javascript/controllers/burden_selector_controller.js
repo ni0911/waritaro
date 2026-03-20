@@ -34,7 +34,7 @@ export default class extends Controller {
   }
 
   amountValueChanged(value) {
-    if (!this.customBtnTarget.classList.contains("border-blue-500")) {
+    if (!this.customBtnTarget.classList.contains("wt-mode-btn--active")) {
       this.setSplit()
     }
   }
@@ -59,13 +59,10 @@ export default class extends Controller {
   }
 
   _activateBtn(btn) {
-    btn.classList.add("border-blue-500", "bg-blue-50", "text-blue-700")
-    btn.classList.remove("border-gray-200", "bg-gray-50", "text-gray-500", "border-gray-300", "text-gray-600")
+    btn.classList.add("wt-mode-btn--active")
   }
 
   _deactivateBtn(btn) {
-    btn.classList.remove("border-blue-500", "bg-blue-50", "text-blue-700")
-    btn.classList.add("border-gray-200", "text-gray-500")
-    btn.classList.remove("border-gray-300", "text-gray-600", "bg-gray-50")
+    btn.classList.remove("wt-mode-btn--active")
   }
 }

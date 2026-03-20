@@ -1,37 +1,39 @@
-<div class="px-4 py-6 max-w-md mx-auto">
-  <h1 class="text-lg font-bold mb-6">ログイン</h1>
+<div class="wt-page-center">
+  <div class="mb-10 text-center">
+    <span class="wt-auth-brand">ワリタロ</span>
+    <p class="wt-auth-tagline mt-1">2人の家計をすっきり管理</p>
+  </div>
 
   <% if flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-lg"><%= flash[:alert] %></p>
+    <div class="wt-alert-box"><%= flash[:alert] %></div>
   <% end %>
 
   <%= form_with url: session_path, class: "space-y-4" do |form| %>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+      <label class="wt-label">メールアドレス</label>
       <%= form.email_field :email_address,
             required: true,
             autofocus: true,
             autocomplete: "username",
             placeholder: "example@email.com",
             value: params[:email_address],
-            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50" %>
+            class: "wt-input" %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+      <label class="wt-label">パスワード</label>
       <%= form.password_field :password,
             required: true,
             autocomplete: "current-password",
             maxlength: 72,
-            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50" %>
+            class: "wt-input" %>
     </div>
 
-    <%= form.submit "ログイン",
-          class: "w-full bg-blue-500 text-white py-3.5 rounded-xl text-base font-semibold mt-2" %>
+    <%= form.submit "ログイン", class: "wt-btn wt-btn-primary mt-2" %>
   <% end %>
 
-  <p class="mt-4 text-center text-sm text-gray-500">
+  <p class="mt-6 text-center text-sm wt-text-3">
     アカウントをお持ちでない方は
-    <%= link_to "新規登録", new_registration_path, class: "text-blue-500 underline" %>
+    <%= link_to "新規登録", new_registration_path, class: "wt-link" %>
   </p>
 </div>

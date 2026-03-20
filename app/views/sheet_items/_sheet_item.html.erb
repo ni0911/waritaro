@@ -1,8 +1,8 @@
 <%= turbo_frame_tag "sheet_item_#{sheet_item.id}" do %>
-  <div class="bg-white rounded-xl border border-gray-200 px-3 py-2.5">
+  <div class="wt-item">
     <div class="flex items-start justify-between gap-2">
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium truncate"><%= sheet_item.name %></p>
+        <p class="wt-item-name truncate"><%= sheet_item.name %></p>
         <div class="flex items-center gap-1.5 mt-0.5">
           <%# 金額インライン編集 %>
           <span data-controller="inline-edit"
@@ -10,34 +10,35 @@
                 data-inline-edit-field-value="sheet_item[amount]">
             <span data-action="click->inline-edit#startEdit"
                   data-inline-edit-target="display"
-                  class="text-sm text-blue-600 cursor-pointer underline decoration-dotted">
+                  class="wt-item-amount">
               <%= number_to_currency(sheet_item.amount, unit: "¥", precision: 0) %>
             </span>
             <input type="number"
                    data-inline-edit-target="input"
                    data-action="blur->inline-edit#submit keydown.enter->inline-edit#submit keydown.escape->inline-edit#cancel"
                    value="<%= sheet_item.amount %>"
-                   class="hidden w-24 border border-blue-400 rounded-lg px-2 py-0.5 text-base"
+                   class="hidden w-24 wt-input-edit"
                    min="0">
           </span>
           <% if sheet_item.card %>
-            <span class="text-xs text-gray-400">/<%= sheet_item.card.name %></span>
+            <span class="wt-item-meta">/ <%= sheet_item.card.name %></span>
           <% end %>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex items-center gap-1 shrink-0">
         <%# 分担表示 %>
-        <span class="text-xs text-gray-500 leading-tight text-right">
-          <span class="block"><%= @setting.member_a %>:<%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %></span>
-          <span class="block"><%= @setting.member_b %>:<%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %></span>
+        <span class="wt-item-burden">
+          <span class="block"><%= @setting.member_a %>: <%= number_to_currency(sheet_item.burden_a, unit: "¥", precision: 0) %></span>
+          <span class="block"><%= @setting.member_b %>: <%= number_to_currency(sheet_item.burden_b, unit: "¥", precision: 0) %></span>
         </span>
 
         <%# 編集ボタン %>
-        <%= link_to "✎",
-              edit_sheet_sheet_item_path(sheet.year_month, sheet_item),
+        <%= link_to edit_sheet_sheet_item_path(sheet.year_month, sheet_item),
               data: { turbo_frame: "sheet_item_#{sheet_item.id}" },
-              class: "text-blue-400 text-base leading-none w-10 h-10 flex items-center justify-center" %>
+              class: "wt-item-btn wt-item-btn-edit" do %>
+          ✎
+        <% end %>
 
         <%# 削除ボタン %>
         <%= button_to "×",
@@ -49,7 +50,7 @@
                 data-action="confirm-modal#open"
                 data-confirm-modal-message-param="「<%= sheet_item.name %>」を削除しますか？"
                 data-confirm-modal-form-param="delete_sheet_item_<%= sheet_item.id %>"
-                class="text-red-400 text-lg leading-none w-10 h-10 flex items-center justify-center">
+                class="wt-item-btn wt-item-btn-del">
           ×
         </button>
       </div>

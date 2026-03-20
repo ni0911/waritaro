@@ -1,18 +1,19 @@
 <div id="template_item_<%= template_item.id %>"
-     class="bg-white rounded-xl border border-gray-200 px-4 py-3">
+     class="wt-card-flat px-4 py-3">
   <div class="flex items-center justify-between">
     <div>
-      <p class="font-medium text-sm"><%= template_item.name %></p>
-      <p class="text-xs text-gray-500 mt-0.5">
+      <p class="text-sm font-semibold wt-text-1"><%= template_item.name %></p>
+      <p class="text-sm mt-0.5 font-medium wt-text-gold">
         <%= number_to_currency(template_item.amount, unit: "¥", precision: 0) %>
       </p>
-      <p class="text-xs text-gray-400 leading-tight">
-        <span class="block"><%= @setting.member_a %>:<%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %></span>
-        <span class="block"><%= @setting.member_b %>:<%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %></span>
+      <p class="text-xs mt-0.5 leading-relaxed wt-text-3">
+        <span class="block"><%= @setting.member_a %>: <%= number_to_currency(template_item.burden_a, unit: "¥", precision: 0) %></span>
+        <span class="block"><%= @setting.member_b %>: <%= number_to_currency(template_item.burden_b, unit: "¥", precision: 0) %></span>
       </p>
     </div>
     <div class="flex gap-3">
-      <%= link_to "編集", edit_template_item_path(template_item), class: "text-blue-500 text-sm py-2 px-1" %>
+      <%= link_to "編集", edit_template_item_path(template_item),
+            class: "text-sm font-medium py-2 px-1 wt-text-gold" %>
       <%= button_to "削除",
             template_item_path(template_item),
             method: :delete,
@@ -22,7 +23,7 @@
               data-action="confirm-modal#open"
               data-confirm-modal-message-param="「<%= template_item.name %>」を削除しますか？"
               data-confirm-modal-form-param="delete_template_item_<%= template_item.id %>"
-              class="text-red-500 text-sm py-2 px-1">
+              class="text-sm font-medium py-2 px-1 wt-text-danger">
         削除
       </button>
     </div>

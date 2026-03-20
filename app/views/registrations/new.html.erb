@@ -1,45 +1,47 @@
-<div class="px-4 py-6 max-w-md mx-auto">
-  <h1 class="text-lg font-bold mb-6">アカウント作成</h1>
+<div class="wt-page-center">
+  <div class="mb-8 text-center">
+    <span class="wt-auth-brand">ワリタロ</span>
+    <p class="wt-auth-tagline mt-1">アカウントを作成する</p>
+  </div>
 
   <% if flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-lg"><%= flash[:alert] %></p>
+    <div class="wt-alert-box"><%= flash[:alert] %></div>
   <% end %>
 
   <%= form_with model: @user, url: registrations_path, class: "space-y-4" do |f| %>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+      <label class="wt-label">メールアドレス</label>
       <%= f.email_field :email_address,
-            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            class: "wt-input",
             placeholder: "example@email.com",
             autocomplete: "username" %>
       <% if @user.errors[:email_address].any? %>
-        <p class="text-red-500 text-sm mt-1"><%= @user.errors[:email_address].first %></p>
+        <p class="wt-error"><%= @user.errors[:email_address].first %></p>
       <% end %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+      <label class="wt-label">パスワード</label>
       <%= f.password_field :password,
-            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            class: "wt-input",
             autocomplete: "new-password" %>
       <% if @user.errors[:password].any? %>
-        <p class="text-red-500 text-sm mt-1"><%= @user.errors[:password].first %></p>
+        <p class="wt-error"><%= @user.errors[:password].first %></p>
       <% end %>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">パスワード（確認）</label>
+      <label class="wt-label">パスワード（確認）</label>
       <%= f.password_field :password_confirmation,
-            class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50",
+            class: "wt-input",
             autocomplete: "new-password" %>
     </div>
 
-    <%= f.submit "アカウントを作成する",
-          class: "w-full bg-blue-500 text-white py-3.5 rounded-xl text-base font-semibold mt-2" %>
+    <%= f.submit "アカウントを作成する", class: "wt-btn wt-btn-primary mt-2" %>
   <% end %>
 
-  <p class="mt-4 text-center text-sm text-gray-500">
+  <p class="mt-6 text-center text-sm wt-text-3">
     すでにアカウントをお持ちの方は
-    <%= link_to "ログイン", new_session_path, class: "text-blue-500 underline" %>
+    <%= link_to "ログイン", new_session_path, class: "wt-link" %>
   </p>
 </div>

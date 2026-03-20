@@ -1,33 +1,33 @@
-<div class="px-4 py-6">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-lg font-bold">月次シート</h1>
+<div class="wt-page">
+  <div class="wt-page-header">
+    <h1 class="wt-page-title">月次シート</h1>
     <button type="button"
             data-action="prompt-modal#open"
             data-prompt-modal-url-param="<%= sheets_path %>"
             data-prompt-modal-default-param="<%= Date.today.strftime('%Y-%m') %>"
-            class="bg-blue-500 text-white text-sm px-4 py-2 rounded-xl font-medium">
+            class="wt-btn wt-btn-primary wt-btn-sm">
       ＋ 新しい月
     </button>
   </div>
 
   <% if @sheets.empty? %>
-    <div class="text-center py-16 text-gray-400">
-      <p class="text-4xl mb-3">📋</p>
-      <p>シートがありません</p>
-      <p class="text-sm mt-1">「＋ 新しい月」から作成してください</p>
+    <div class="wt-empty">
+      <span class="wt-empty-icon">📋</span>
+      <p class="wt-empty-text">シートがありません</p>
+      <p class="wt-empty-hint">「＋ 新しい月」から作成してください</p>
     </div>
   <% else %>
-    <div class="space-y-3">
+    <div class="space-y-2">
       <% @sheets.each do |sheet| %>
-        <div class="bg-white rounded-xl border border-gray-200 px-4 py-3 flex items-center justify-between">
+        <div class="wt-sheet-row">
           <div>
             <%= link_to sheet.label, settlement_sheet_path(sheet.year_month),
-                  class: "font-medium text-blue-600" %>
-            <p class="text-xs text-gray-400 mt-0.5"><%= sheet.sheet_items.count %>件の費用</p>
+                  class: "wt-sheet-label" %>
+            <p class="wt-sheet-meta"><%= sheet.sheet_items.count %>件の費用</p>
           </div>
           <div class="flex items-center gap-3">
             <%= link_to "開く", settlement_sheet_path(sheet.year_month),
-                  class: "text-blue-500 text-sm" %>
+                  class: "text-sm font-medium wt-text-gold" %>
             <%= button_to "削除",
                   sheet_path(sheet.year_month),
                   method: :delete,
@@ -37,7 +37,7 @@
                     data-action="confirm-modal#open"
                     data-confirm-modal-message-param="<%= sheet.label %>を削除しますか？"
                     data-confirm-modal-form-param="delete_sheet_<%= sheet.id %>"
-                    class="text-red-500 text-sm">
+                    class="text-sm font-medium wt-text-danger">
               削除
             </button>
           </div>
