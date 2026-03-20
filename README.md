@@ -31,16 +31,25 @@
 
 ## ローカル起動
 
+**前提: Ruby 3.3.0**（`.ruby-version` に記載。rbenv / asdf 等で合わせてください）
+
 ```bash
+# 初回のみ: gem のインストール先をリポジトリ内に固定
+bundle config set --local path vendor/bundle
+
+# gem をインストール
 bundle install
+
+# DB を作成してマイグレーション＋シードデータ投入
 bin/rails db:create db:migrate db:seed
+
+# サーバー起動（Rails + Tailwind CSS watch を同時起動）
 bin/dev
 ```
 
-`bin/dev` は Rails サーバーと Tailwind CSS の watch を同時起動します。
 ブラウザで http://localhost:3000 にアクセスしてください。
-
 初回アクセス時はログインページにリダイレクトされます。「新規登録」からアカウントを作成し、グループを設定してください。
+
 
 ## テスト
 
