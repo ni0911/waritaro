@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+#
+# 並行開発用の git worktree を一発でセットアップするスクリプト。
+#
+# 使い方:
+#   bin/new-worktree <branch-name>
+#
+# 例:
+#   bin/new-worktree feature/login      # 新しいブランチを切って worktree を作る
+#   bin/new-worktree some-existing       # 既存ブランチをチェックアウトして作る
+#
+# やること:
+#   1. ../<repo>-<branch> に worktree を作成（ブランチ名の / は - に変換）
+#   2. master.key があればコピー（git 管理外なので worktree には引き継がれない）
+#   3. bundle 設定（path vendor/bundle / without production）+ bundle install
+#   4. bin/rails db:prepare で worktree 専用の DB を用意
+#
+set -euo pipefail
+
+# --- 引数チェック ---------------------------------------------------------
+if [ "$#" -ne 1 ]; then
+  echo "使い方: bin/new-worktree <branch-name>" >&2
+  echo "  例: bin/new-worktree feature/login" >&2
+  exit 1
+fi
+
+branch="$1"
+
+# --- メインリポジトリのルートを特定（どの worktree から呼んでも同じ場所を指す） ---
+git_common_dir="$(git rev-parse --git-common-dir)"
+main_root="$(cd "$git_common_dir/.." && pwd)"
+repo_name="$(basename "$main_root")"
+parent_dir="$(dirname "$main_root")"
+
+# ブランチ名のスラッシュをフォルダ名用にハイフンへ変換（feature/login -> feature-login）
+slug="${branch//\//-}"
+worktree_path="$parent_dir/${repo_name}-${slug}"
+
+if [ -e "$worktree_path" ]; then
+  echo "✗ すでに存在します: $worktree_path" >&2
+  exit 1
+fi
+
+# --- 1. worktree を作成 ---------------------------------------------------
+# 既存ブランチならそのままチェックアウト、無ければ -b で新規作成。
+if git show-ref --verify --quiet "refs/heads/${branch}"; then
+  echo "▶ 既存ブランチ '${branch}' をチェックアウトして worktree を作成"
+  git worktree add "$worktree_path" "$branch"
+else
+  echo "▶ 新規ブランチ '${branch}' を作成して worktree を作成"
+  git worktree add -b "$branch" "$worktree_path"
+fi
+
+cd "$worktree_path"
+
+# --- 2. master.key をコピー（存在する場合のみ） ---------------------------
+if [ -f "$main_root/config/master.key" ]; then
+  cp "$main_root/config/master.key" config/master.key
+  echo "✔ master.key をコピーしました"
+else
+  echo "・master.key はメインに無いためスキップ（このプロジェクトはローカルで未使用）"
+fi
+
+# --- 3. bundle セットアップ（方針A: worktree ごとに独立した vendor/bundle） ---
+echo "▶ bundle install（vendor/bundle に独立インストール）"
+bundle config set --local path vendor/bundle
+bundle config set --local without production
+bundle install
+
+# --- 4. DB セットアップ（worktree 専用の独立 DB） -------------------------
+echo "▶ bin/rails db:prepare"
+bin/rails db:prepare
+
+# --- 完了メッセージ -------------------------------------------------------
+cat <<MSG
+
+✅ セットアップ完了！
+
+  cd $worktree_path
+
+起動するときは、メインと同時起動するならポートをずらしてください:
+
+  bin/rails server -p 3001
+  # または PORT=3001 bin/dev
+
+片付けるとき（作業 & マージ完了後、メインツリーで実行）:
+
+  git worktree remove $worktree_path
+  git branch -d $branch
+MSG

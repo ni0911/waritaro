@@ -38,3 +38,6 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Ignore macOS folder metadata files.
+.DS_Store
