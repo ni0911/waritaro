@@ -15,7 +15,7 @@ class AddSettingIdToAppTables < ActiveRecord::Migration[8.0]
       # Setting が1件もない場合はデフォルト行を作成
       execute(<<~SQL)
         INSERT INTO settings (member_a, member_b, created_at, updated_at)
-        VALUES ('たろう', 'はなこ', NOW(), NOW())
+        VALUES ('たろう', 'はなこ', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       SQL
       result = execute("SELECT id FROM settings ORDER BY id LIMIT 1")
       setting_id = result.first&.dig("id")
