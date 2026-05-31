@@ -6,9 +6,9 @@ end
 puts "Setting: #{setting.member_a} / #{setting.member_b}"
 
 # == Cards ==
-card_a = Card.find_or_create_by!(name: "楽天カード") { |c| c.owner = "A" }
-card_b = Card.find_or_create_by!(name: "イオンカード") { |c| c.owner = "B" }
-puts "Cards: #{Card.count}件"
+card_a = setting.cards.find_or_create_by!(name: "楽天カード") { |c| c.owner = "A" }
+card_b = setting.cards.find_or_create_by!(name: "イオンカード") { |c| c.owner = "B" }
+puts "Cards: #{setting.cards.count}件"
 
 # == Template Items ==
 [
@@ -16,14 +16,14 @@ puts "Cards: #{Card.count}件"
   { name: "食費",   amount: 50_000,  burden_a: 25_000, burden_b: 25_000, card_id: card_b.id, sort_order: 2 },
   { name: "光熱費", amount: 15_000,  burden_a: 7_500,  burden_b: 7_500,  card_id: card_a.id, sort_order: 3 }
 ].each do |attrs|
-  TemplateItem.find_or_create_by!(name: attrs[:name]) do |t|
+  setting.template_items.find_or_create_by!(name: attrs[:name]) do |t|
     t.assign_attributes(attrs)
   end
 end
-puts "TemplateItems: #{TemplateItem.count}件"
+puts "TemplateItems: #{setting.template_items.count}件"
 
 # == Sample Sheet (今月) ==
-sheet = Sheet.find_or_create_by!(year_month: "2026-03")
+sheet = setting.sheets.find_or_create_by!(year_month: "2026-03")
 
 [
   { name: "家賃",   amount: 120_000, burden_a: 80_000, burden_b: 40_000, card_id: nil,       is_from_template: true },
