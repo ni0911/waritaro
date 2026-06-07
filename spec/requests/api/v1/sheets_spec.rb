@@ -44,6 +44,44 @@ RSpec.describe "Api::V1::Sheets", type: :request do
         year_months = response.parsed_body.fetch("sheets").map { |s| s["year_month"] }
         expect(year_months).to contain_exactly("2026-02")
       end
+
+      it "pagination メタ情報を返す（デフォルト page=1 per_page=20）" do
+        create(:sheet, year_month: "2026-01", setting: setting)
+
+        get "/api/v1/sheets"
+
+        meta = response.parsed_body.fetch("pagination")
+        expect(meta).to include(
+          "page"        => 1,
+          "per_page"    => 20,
+          "total_count" => 1,
+          "total_pages" => 1
+        )
+      end
+
+      it "page / per_page で絞り込める" do
+        %w[2026-01 2026-02 2026-03].each { |ym| create(:sheet, year_month: ym, setting: setting) }
+
+        get "/api/v1/sheets", params: { per_page: 2, page: 1 }
+        page1 = response.parsed_body
+        expect(page1.fetch("sheets").map { |s| s["year_month"] }).to eq(%w[2026-03 2026-02])
+        expect(page1.dig("pagination", "total_count")).to eq(3)
+        expect(page1.dig("pagination", "total_pages")).to eq(2)
+
+        get "/api/v1/sheets", params: { per_page: 2, page: 2 }
+        page2 = response.parsed_body
+        expect(page2.fetch("sheets").map { |s| s["year_month"] }).to eq(%w[2026-01])
+      end
+
+      it "per_page は上限(100)でクランプされる" do
+        get "/api/v1/sheets", params: { per_page: 9999 }
+        expect(response.parsed_body.dig("pagination", "per_page")).to eq(100)
+      end
+
+      it "不正な page は 1 にフォールバックする" do
+        get "/api/v1/sheets", params: { page: 0 }
+        expect(response.parsed_body.dig("pagination", "page")).to eq(1)
+      end
     end
 
     context "グループ未所属のユーザー" do

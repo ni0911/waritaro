@@ -45,6 +45,12 @@ RSpec.describe "Api::V1::SheetItems", type: :request do
         expect(response.parsed_body.dig("error", "details")).to be_present
       end
 
+      it "必須パラメータ(sheet_item)が無いと 400 と error JSON を返す" do
+        post "/api/v1/sheets/#{sheet.year_month}/sheet_items", params: {}
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body.dig("error", "code")).to eq("bad_request")
+      end
+
       it "存在しない年月は 404 を返す" do
         post "/api/v1/sheets/2099-12/sheet_items", params: valid_params
         expect(response).to have_http_status(:not_found)

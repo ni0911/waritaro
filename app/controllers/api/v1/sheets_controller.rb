@@ -3,8 +3,13 @@ module Api
     class SheetsController < BaseController
       # GET /api/v1/sheets
       def index
-        sheets = current_setting.sheets.order(year_month: :desc)
-        render json: SheetSerializer.new(sheets).serialize
+        scope        = current_setting.sheets.order(year_month: :desc)
+        sheets, meta = paginate(scope)
+
+        render json: {
+          sheets:     SheetSerializer.new(sheets).serializable_hash,
+          pagination: meta
+        }
       end
 
       # GET /api/v1/sheets/:year_month/settlement
