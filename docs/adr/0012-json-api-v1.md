@@ -104,6 +104,41 @@ config/routes.rb                # namespace :api { namespace :v1 { ... } }
 - **テナント分離の継続**: `current_setting.sheets` のようにグループスコープで引く既存ルールを
   API でも厳守し、マルチテナントの分離（ADR 0010）を崩さない
 
+### 確定仕様（1-5 / 1-6 実装で確定）
+
+#### エラー JSON 形式（1-5）
+
+例外ハンドリングを `BaseController` に `rescue_from` で集約し、全エラーを統一形式で返す。
+
+| 状況 | ステータス | code |
+|------|-----------|------|
+| 未認証（`request_authentication` override） | 401 | `unauthorized` |
+| グループ未所属（`require_group_membership`） | 403 | `forbidden` |
+| リソース未検出（`ActiveRecord::RecordNotFound`） | 404 | `not_found` |
+| 必須パラメータ欠落（`ActionController::ParameterMissing`） | 400 | `bad_request` |
+| バリデーション失敗（`save` 失敗 / `RecordInvalid`） | 422 | `unprocessable_content` |
+
+```jsonc
+// 通常エラー
+{ "error": { "code": "not_found", "message": "リソースが見つかりません" } }
+// バリデーションエラーは details にメッセージ一覧を付与
+{ "error": { "code": "unprocessable_content", "message": "保存に失敗しました",
+             "details": ["Name can't be blank", "..."] } }
+```
+
+#### ページネーション（1-6）
+
+`BaseController#paginate(relation)` による offset/limit 方式。`?page=`・`?per_page=` で指定。
+
+- `page`: 既定 1。0 以下は 1 にフォールバック
+- `per_page`: 既定 20（`DEFAULT_PER_PAGE`）、上限 100（`MAX_PER_PAGE`）でクランプ
+- レスポンスに `pagination` メタ情報を付与
+
+```jsonc
+{ "sheets": [ /* ... */ ],
+  "pagination": { "page": 1, "per_page": 20, "total_count": 35, "total_pages": 2 } }
+```
+
 ---
 
 ## 影響・注意事項
@@ -121,4 +156,5 @@ config/routes.rb                # namespace :api { namespace :v1 { ... } }
 
 - フェーズ2でトークン認証（`Authorization: Bearer`）→ OAuth2.0 リソース/認可サーバー化を行う際、
   本 ADR の「Cookie 認証流用」を見直す ADR を別途起票する
-- エラー JSON 形式・ページネーション仕様は 1-5 / 1-6 着手時に必要なら追補する
+- エラー JSON 形式・ページネーション仕様は上記「確定仕様」に記載済み（1-5 / 1-6 実装済み）
+- 残タスク: 1-8 OpenAPI/Swagger によるドキュメント化（任意）
