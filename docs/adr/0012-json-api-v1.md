@@ -89,7 +89,7 @@ config/routes.rb                # namespace :api { namespace :v1 { ... } }
 - 1-5 エラー JSON 形式統一（例外ハンドリング集約）
 - 1-6 ページネーション（`?page=&per_page=`）
 - 1-7 request spec で全エンドポイント TDD
-- 1-8（余裕あれば）OpenAPI/Swagger でドキュメント化
+- 1-8 OpenAPI/Swagger でドキュメント化 → **手書き `swagger/v1/openapi.yaml` + rswag-ui** を採用（後述）
 
 ---
 
@@ -141,6 +141,24 @@ config/routes.rb                # namespace :api { namespace :v1 { ... } }
 
 ---
 
+#### API ドキュメント（1-8）
+
+OpenAPI ドキュメント化は **手書き OpenAPI スペック + rswag-ui** 方式を採用した。
+
+| 方式 | 判断 |
+|------|------|
+| **手書き `openapi.yaml` + rswag-ui** | **採用**。`swagger/v1/openapi.yaml` を手書きし、`rswag-api`/`rswag-ui` で `/api-docs` に Swagger UI を配信。既存の request spec を DSL へ書き換えずに済む |
+| rswag-specs（テスト駆動生成） | 見送り。request spec を Swagger DSL へ書き換える手間が大きい。将来エンドポイントが増えたら再検討 |
+
+- **依存追加**: `rswag-api` / `rswag-ui`（全環境）
+- スペック配置: `swagger/v1/openapi.yaml`（`rswag-api` の `openapi_root` = `swagger/`）
+- UI/スペック URL: `/api-docs`（UI） / `/api-docs/v1/openapi.yaml`（スペック）
+- `rswag-api` の配信ルートは `swagger/` 配下に限定し、`docs/`（ADR 等）を HTTP 公開しない
+- **注意**: `/api-docs` は認証なしで公開（API の形だけ／機微データは含まない）。
+  非公開にしたい場合は `rswag-ui` の `basic_auth_enabled` で保護可能
+
+---
+
 ## 影響・注意事項
 
 - **依存追加**: `alba` gem を追加（全環境）
@@ -157,4 +175,5 @@ config/routes.rb                # namespace :api { namespace :v1 { ... } }
 - フェーズ2でトークン認証（`Authorization: Bearer`）→ OAuth2.0 リソース/認可サーバー化を行う際、
   本 ADR の「Cookie 認証流用」を見直す ADR を別途起票する
 - エラー JSON 形式・ページネーション仕様は上記「確定仕様」に記載済み（1-5 / 1-6 実装済み）
-- 残タスク: 1-8 OpenAPI/Swagger によるドキュメント化（任意）
+- フェーズ1（1-1〜1-8）は完了。エンドポイント追加時は `swagger/v1/openapi.yaml` を追従更新する
+- フェーズ2でトークン認証を入れる際、OpenAPI に `securitySchemes`（Bearer）を追記する
