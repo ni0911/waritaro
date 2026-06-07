@@ -33,6 +33,28 @@ RSpec.describe "Api::V1::SheetItems", type: :request do
         expect(item["amount"]).to eq(8000)
       end
 
+      it "自グループの card_id なら紐付けて 201 を返す" do
+        card = create(:card, setting: setting)
+
+        post "/api/v1/sheets/#{sheet.year_month}/sheet_items",
+             params: { sheet_item: valid_params[:sheet_item].merge(card_id: card.id) }
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body.dig("sheet_item", "card_id")).to eq(card.id)
+      end
+
+      it "他グループの card_id は紐付けられず 422（テナント分離）" do
+        other_card = create(:card, setting: create(:setting))
+
+        expect {
+          post "/api/v1/sheets/#{sheet.year_month}/sheet_items",
+               params: { sheet_item: valid_params[:sheet_item].merge(card_id: other_card.id) }
+        }.not_to change(SheetItem, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("unprocessable_content")
+      end
+
       it "不正なパラメータは 422 とバリデーションエラーを返す" do
         invalid = { sheet_item: { name: "", amount: 8000, burden_a: 0, burden_b: 0 } }
 

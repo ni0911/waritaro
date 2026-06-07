@@ -17,6 +17,29 @@ RSpec.describe SheetItem, type: :model do
       item = build(:sheet_item, burden_a: 1000, burden_b: 0)
       expect(item).to be_valid
     end
+
+    describe 'card のテナント整合性' do
+      let(:setting) { create(:setting) }
+      let(:sheet)   { create(:sheet, setting: setting) }
+
+      it '同じグループの card なら有効' do
+        card = create(:card, setting: setting)
+        item = build(:sheet_item, sheet: sheet, card: card)
+        expect(item).to be_valid
+      end
+
+      it '別グループの card は無効' do
+        other_card = create(:card, setting: create(:setting))
+        item = build(:sheet_item, sheet: sheet, card: other_card)
+        expect(item).not_to be_valid
+        expect(item.errors[:card]).to be_present
+      end
+
+      it 'card 未指定なら有効' do
+        item = build(:sheet_item, sheet: sheet, card: nil)
+        expect(item).to be_valid
+      end
+    end
   end
 
   describe 'アソシエーション' do
