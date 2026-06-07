@@ -38,6 +38,18 @@ Rails.application.routes.draw do
 
   resources :cards, only: [ :index, :new, :create, :edit, :update, :destroy ]
 
+  # JSON API（ADR 0012）
+  namespace :api do
+    namespace :v1 do
+      resources :sheets, param: :year_month, only: [ :index ] do
+        member do
+          get :settlement
+        end
+        resources :sheet_items, only: [ :create ]
+      end
+    end
+  end
+
   # PWA関連（デフォルトのまま）
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
