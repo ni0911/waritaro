@@ -3,7 +3,8 @@ module Authentication
 
   included do
     before_action :require_authentication
-    helper_method :authenticated?
+    # ActionController::API には helper_method が無い（API 用 BaseController から流用するため）
+    helper_method :authenticated? if respond_to?(:helper_method)
   end
 
   class_methods do
