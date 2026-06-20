@@ -1,6 +1,6 @@
 class RegistrationsController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
-  skip_before_action :require_group_membership
+  skip_before_action :require_membership, only: %i[ new create ]
 
   def new
     @user = User.new
@@ -10,7 +10,7 @@ class RegistrationsController < ApplicationController
     @user = User.new(registration_params)
     if @user.save
       start_new_session_for(@user)
-      redirect_to new_group_setting_path, notice: "アカウントを作成しました。グループを設定してください。"
+      redirect_to new_group_path, notice: "アカウントを作成しました。グループをつくりましょう。"
     else
       render :new, status: :unprocessable_content
     end

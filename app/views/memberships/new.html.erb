@@ -1,0 +1,19 @@
+<div class="wt-page">
+  <header class="flex items-center justify-between mb-4">
+    <%= link_to "‹ もどる", (current_user.members.exists? ? root_path : new_group_path), class: "wt-back" %>
+    <%= link_to "新しくつくる", new_group_path, class: "wt-section-link" %>
+  </header>
+
+  <h1 class="wt-display mb-1" style="font-size:1.5rem;font-weight:900;">グループに参加</h1>
+  <p class="wt-greeting-sub mb-4">招待コードを入力してください。</p>
+
+  <% if @error %><div class="wt-alert-box"><%= @error %></div><% end %>
+
+  <%= form_with url: membership_path, method: :post, data: { turbo: false } do %>
+    <div class="mb-4">
+      <%= label_tag :invite_code, "招待コード", class: "wt-label" %>
+      <%= text_field_tag :invite_code, @code, class: "wt-input", placeholder: "招待コードを貼り付け", autofocus: true %>
+    </div>
+    <%= submit_tag "参加する", class: "wt-btn wt-btn-primary" %>
+  <% end %>
+</div>

@@ -1,86 +1,78 @@
 require 'rails_helper'
 
 RSpec.describe SettlementService do
-  let(:sheet) { instance_double('Sheet') }
+  # nets を貪欲法で最小送金プランへ変換する純粋ロジックの検証
+  describe '.minimize_transfers' do
+    it '2者: 一方が立替、他方が負担 → 1回の送金' do
+      transfers = described_class.minimize_transfers({ "a" => 1000, "b" => -1000 })
+      expect(transfers).to contain_exactly({ from: "b", to: "a", amount: 1000 })
+    end
 
-  def make_item(amount:, burden_a:, burden_b:)
-    instance_double('SheetItem',
-      amount: amount,
-      burden_a: burden_a,
-      burden_b: burden_b
-    )
+    it '全員精算済み(net 0)なら送金なし' do
+      expect(described_class.minimize_transfers({ "a" => 0, "b" => 0 })).to eq([])
+    end
+
+    it '3人: 1人が立替、2人が負担 → 2回' do
+      transfers = described_class.minimize_transfers({ "me" => 1800, "yui" => -1000, "mio" => -800 })
+      expect(transfers).to contain_exactly(
+        { from: "yui", to: "me", amount: 1000 },
+        { from: "mio", to: "me", amount: 800 }
+      )
+    end
+
+    it 'n人の送金回数は高々 n-1 回（最小性）' do
+      nets = { "a" => 5, "b" => 5, "c" => 5, "d" => -5, "e" => -5, "f" => -5 }
+      transfers = described_class.minimize_transfers(nets)
+      expect(transfers.size).to be <= nets.size - 1
+    end
+
+    it '送金の総額は債務の総額に一致し、各 net を相殺する' do
+      nets = { "a" => 8400, "b" => -3000, "c" => -2400, "d" => -1500, "e" => -1500 }
+      transfers = described_class.minimize_transfers(nets)
+      # 各メンバーの (受取 - 支払) が net を打ち消す
+      balance = Hash.new(0)
+      transfers.each do |t|
+        balance[t[:from]] -= t[:amount]
+        balance[t[:to]]   += t[:amount]
+      end
+      nets.each { |id, n| expect(balance[id]).to eq(n) }
+    end
   end
 
-  describe '#calculate' do
-    context '通常ケース: A と B それぞれ負担あり' do
-      before do
-        items = [
-          make_item(amount: 80000, burden_a: 60000, burden_b: 20000), # 家賃
-          make_item(amount: 30000, burden_a: 15000, burden_b: 15000), # 食費
-          make_item(amount: 5000,  burden_a: 0,     burden_b: 0)     # 私物
-        ]
-        allow(sheet).to receive(:sheet_items).and_return(items)
-      end
+  describe '#plan（グループの未精算費用から算出）' do
+    let(:group) { create(:group) }
+    let(:taro) { create(:member, group: group, name: "たろう", sort_order: 0) }
+    let(:yui)  { create(:member, group: group, name: "ゆい",   sort_order: 1) }
+    let(:mio)  { create(:member, group: group, name: "みお",   sort_order: 2) }
 
-      it 'total_shared_amount は私物を除いた burden 合計' do
-        result = described_class.new(sheet).calculate
-        expect(result.total_shared_amount).to eq(110000) # 75000 + 35000
-      end
+    it '均等割: たろうが3000立替、3人で均等 → ゆい・みおがそれぞれ1000送金' do
+      create(:expense, group: group, payer: taro, amount: 3000,
+        shares: [ { member: taro, amount: 1000 }, { member: yui, amount: 1000 }, { member: mio, amount: 1000 } ])
 
-      it 'deposit_a の合計が正しい' do
-        result = described_class.new(sheet).calculate
-        expect(result.deposit_a).to eq(75000) # 60000 + 15000
-      end
-
-      it 'deposit_b の合計が正しい' do
-        result = described_class.new(sheet).calculate
-        expect(result.deposit_b).to eq(35000) # 20000 + 15000
-      end
+      plan = described_class.new(group).plan
+      expect(plan.transfers.map { |t| [ t.from.name, t.to.name, t.amount ] }).to contain_exactly(
+        [ "ゆい", "たろう", 1000 ],
+        [ "みお", "たろう", 1000 ]
+      )
     end
 
-    context '全て割り勘（50:50）' do
-      before do
-        items = [
-          make_item(amount: 20000, burden_a: 10000, burden_b: 10000),
-          make_item(amount: 20000, burden_a: 10000, burden_b: 10000)
-        ]
-        allow(sheet).to receive(:sheet_items).and_return(items)
-      end
+    it '純収支(nets)の総和は常に0' do
+      create(:expense, group: group, payer: taro, amount: 3000,
+        shares: [ { member: taro, amount: 1000 }, { member: yui, amount: 1000 }, { member: mio, amount: 1000 } ])
+      create(:expense, group: group, payer: yui, amount: 1200,
+        shares: [ { member: yui, amount: 600 }, { member: mio, amount: 600 } ])
 
-      it 'deposit_a と deposit_b が等しい' do
-        result = described_class.new(sheet).calculate
-        expect(result.deposit_a).to eq(20000)
-        expect(result.deposit_b).to eq(20000)
-      end
+      plan = described_class.new(group).plan
+      expect(plan.nets.values.sum).to eq(0)
     end
 
-    context '精算対象アイテムがない' do
-      before do
-        allow(sheet).to receive(:sheet_items).and_return([])
-      end
+    it '精算済み(settlement付き)の費用は残高に含めない' do
+      settlement = create(:settlement, group: group)
+      create(:expense, group: group, payer: taro, amount: 3000, settlement: settlement,
+        shares: [ { member: taro, amount: 1000 }, { member: yui, amount: 1000 }, { member: mio, amount: 1000 } ])
 
-      it '全て 0 になる' do
-        result = described_class.new(sheet).calculate
-        expect(result.deposit_a).to eq(0)
-        expect(result.deposit_b).to eq(0)
-        expect(result.total_shared_amount).to eq(0)
-      end
-    end
-
-    context '端数が発生するケース' do
-      before do
-        items = [
-          make_item(amount: 10001, burden_a: 5001, burden_b: 5000)
-        ]
-        allow(sheet).to receive(:sheet_items).and_return(items)
-      end
-
-      it '端数は burden_a 側が多く持つ' do
-        result = described_class.new(sheet).calculate
-        expect(result.deposit_a + result.deposit_b).to eq(10001)
-        expect(result.deposit_a).to eq(5001)
-        expect(result.deposit_b).to eq(5000)
-      end
+      plan = described_class.new(group).plan
+      expect(plan.transfers).to be_empty
     end
   end
 end

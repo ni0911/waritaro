@@ -1,0 +1,68 @@
+<% month_count = @events_by_day.values.sum(&:size) %>
+<% lead = @view_date.wday %>
+<% days = @view_date.end_of_month.day %>
+<div class="wt-cal">
+  <div class="wt-cal-head">
+    <div>
+      <div class="wt-cal-title"><%= @view_date.year %>年 <%= @view_date.month %>月</div>
+      <div class="wt-cal-sub"><%= month_count %>件の割り勘</div>
+    </div>
+    <div class="flex gap-1.5">
+      <%= link_to "‹", root_path(month: (@view_date << 1).strftime("%Y-%m")), class: "wt-cal-nav flex items-center justify-center" %>
+      <%= link_to "›", root_path(month: (@view_date >> 1).strftime("%Y-%m")), class: "wt-cal-nav flex items-center justify-center" %>
+    </div>
+  </div>
+
+  <div class="wt-cal-grid mb-0.5">
+    <% %w[日 月 火 水 木 金 土].each_with_index do |dow, i| %>
+      <div class="wt-cal-dow <%= "wt-sun" if i.zero? %><%= "wt-sat" if i == 6 %>"><%= dow %></div>
+    <% end %>
+  </div>
+
+  <div class="wt-cal-grid">
+    <% lead.times do %><div></div><% end %>
+    <% (1..days).each do |d| %>
+      <% date = @view_date.change(day: d) %>
+      <% evs = @events_by_day[date] || [] %>
+      <% today = (date == Date.current) %>
+      <% selected = (date == @selected) %>
+      <%= link_to root_path(month: @view_date.strftime("%Y-%m"), day: date.iso8601),
+            class: "wt-cal-cell #{'wt-cal-today' if today && !selected}",
+            style: (selected ? "background: var(--accent); color:#fff; box-shadow: var(--shadow-card);" : nil) do %>
+        <span class="<%= 'wt-sun' if date.wday.zero? unless selected %><%= 'wt-sat' if date.wday == 6 unless selected %>"><%= d %></span>
+        <% if evs.any? %>
+          <span class="wt-cal-dots">
+            <% evs.map(&:group).uniq.first(3).each do |g| %>
+              <span class="wt-cal-dot" style="background: <%= selected ? '#fff' : g.tile %>; filter: <%= 'saturate(1.5) brightness(.9)' unless selected %>;"></span>
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# 選択日の精算リスト %>
+  <% if @selected %>
+    <% list = @events_by_day[@selected] || [] %>
+    <div class="mt-2.5 pt-2.5" style="border-top: 1px solid var(--line-soft);">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span style="font-weight:700; font-size:.82rem;"><%= @selected.strftime("%-m月%-d日") %>（<%= %w[日 月 火 水 木 金 土][@selected.wday] %>）</span>
+        <% if list.any? %><span class="wt-pill wt-pill-mute" style="padding:1px 8px; font-size:.68rem;"><%= list.size %>件</span><% end %>
+      </div>
+      <% if list.empty? %>
+        <p class="wt-meta">この日は割り勘がありません</p>
+      <% else %>
+        <% list.each do |e| %>
+          <%= link_to group_path(e.group), class: "flex items-center gap-2 py-1 no-underline", style: "color:inherit;" do %>
+            <span class="wt-tile" style="width:30px;height:30px;border-radius:9px;font-size:16px;background:<%= e.group.tile %>;"><%= e.group.icon %></span>
+            <div class="min-w-0 flex-1">
+              <div class="truncate" style="font-size:.84rem;font-weight:700;"><%= e.title %></div>
+              <div class="wt-meta truncate"><%= e.group.name %> · <%= e.payer.name %>が立替</div>
+            </div>
+            <span style="font-size:.86rem;font-weight:700;"><%= yen(e.amount) %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

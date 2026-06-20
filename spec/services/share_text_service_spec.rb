@@ -1,62 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe ShareTextService do
-  let(:setting) { instance_double('Setting', member_a: 'たろう', member_b: 'はなこ') }
-  let(:card_a)  { instance_double('Card', id: 1, name: '楽天カード') }
-  let(:cards)   { [ card_a ] }
+  let(:group) { create(:group, name: "沖縄旅行", icon: "🏝️") }
+  let(:taro) { create(:member, group: group, name: "たろう", sort_order: 0) }
+  let(:yui)  { create(:member, group: group, name: "ゆい",   sort_order: 1) }
+  let(:mio)  { create(:member, group: group, name: "みお",   sort_order: 2) }
 
-  def make_item(name:, amount:, burden_a:, burden_b:, card_id: nil)
-    instance_double('SheetItem',
-      name: name, amount: amount,
-      burden_a: burden_a, burden_b: burden_b, card_id: card_id
-    )
-  end
+  describe '#group_settlement' do
+    it '最小送金プランを LINE 貼り付け用テキストにする' do
+      create(:expense, group: group, payer: taro, amount: 3600,
+        shares: [ { member: taro, amount: 1200 }, { member: yui, amount: 1200 }, { member: mio, amount: 1200 } ])
 
-  describe '#generate' do
-    let(:items) do
-      [
-        make_item(name: '家賃', amount: 120000, burden_a: 80000, burden_b: 40000),
-        make_item(name: '食費', amount: 30000,  burden_a: 15000, burden_b: 15000, card_id: 1),
-        make_item(name: 'A私物', amount: 5000, burden_a: 0, burden_b: 0)
-      ]
+      text = described_class.new(group).group_settlement
+
+      expect(text).to include("【沖縄旅行】🏝️ の精算")
+      expect(text).to include("ゆい → たろう　¥1,200")
+      expect(text).to include("みお → たろう　¥1,200")
+      expect(text).to include("送金は 2 回でOK")
+      expect(text).to include("waritaro")
     end
 
-    let(:sheet) do
-      instance_double('Sheet',
-        year_month: '2026-03',
-        sheet_items: items
-      )
-    end
-
-    subject(:text) { described_class.new(sheet, setting, cards).generate }
-
-    it 'ヘッダーに年月が含まれる' do
-      expect(text).to include('2026年3月')
-    end
-
-    it '精算対象のアイテムが含まれる' do
-      expect(text).to include('家賃')
-      expect(text).to include('食費')
-    end
-
-    it '私物のアイテムが含まれる' do
-      expect(text).to include('A私物')
-    end
-
-    it 'たろう（A）の名前が含まれる' do
-      expect(text).to include('たろう')
-    end
-
-    it 'はなこ（B）の名前が含まれる' do
-      expect(text).to include('はなこ')
-    end
-
-    it 'カード名が含まれる' do
-      expect(text).to include('楽天カード')
-    end
-
-    it '精算（共有口座）の表記が含まれる' do
-      expect(text).to include('共有口座')
+    it '精算済みなら完了メッセージ' do
+      text = described_class.new(group).group_settlement
+      expect(text).to include("🎉 精算は完了しています！")
+      expect(text).not_to include("送金は")
     end
   end
 end
