@@ -25,15 +25,25 @@ RSpec.describe User, type: :model do
   end
 
   describe "アソシエーション" do
-    it "setting に belongs_to する（任意）" do
-      assoc = described_class.reflect_on_association(:setting)
-      expect(assoc).not_to be_nil
-      expect(assoc.options[:optional]).to be true
+    it "members を経由して複数の groups に所属できる" do
+      user = create(:user)
+      g1 = create(:group)
+      g2 = create(:group)
+      create(:member, group: g1, user: user)
+      create(:member, group: g2, user: user)
+      expect(user.groups).to contain_exactly(g1, g2)
     end
 
     it "複数の sessions を持つ" do
       assoc = described_class.reflect_on_association(:sessions)
       expect(assoc).not_to be_nil
+    end
+  end
+
+  describe "#display_name" do
+    it "name があればそれを、なければメールのローカル部を返す" do
+      expect(build(:user, name: "たろう").display_name).to eq("たろう")
+      expect(build(:user, name: nil, email_address: "hanako@example.com").display_name).to eq("hanako")
     end
   end
 end

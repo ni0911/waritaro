@@ -1,55 +1,23 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => "/api-docs"
-  mount Rswag::Api::Engine => "/api-docs"
   resource :session
   resources :passwords, param: :token
 
   # ユーザー登録
-  get  "register",  to: "registrations#new",    as: :new_registration
-  post "register",  to: "registrations#create", as: :registrations
+  get  "register", to: "registrations#new",    as: :new_registration
+  post "register", to: "registrations#create", as: :registrations
 
-  # グループ作成・参加
-  resource :setting, only: [ :show, :update ] do
-    get  :new_group,    on: :member
-    post :create_group, on: :member
-    get  :join,         on: :member
-    post :join,         on: :member
-  end
+  root "home#index"
 
-  root "sheets#index"
+  # 招待コードでグループに参加
+  resource :membership, only: %i[ new create ]
 
-  resources :sheets, param: :year_month, only: [ :index, :create, :destroy ] do
+  resources :groups, only: %i[ new create show ] do
     member do
-      get  :settlement
-      post :apply_template
+      get :invite
+      get :share # グループ精算プランの LINE 共有
     end
-    resources :sheet_items, only: [ :create, :destroy, :edit, :update ] do
-      member do
-        get   :cancel
-        patch :update_burden
-        patch :update_amount
-      end
-    end
-  end
-
-  resources :template_items, only: [ :index, :new, :create, :edit, :update, :destroy ] do
-    collection do
-      patch :reorder
-    end
-  end
-
-  resources :cards, only: [ :index, :new, :create, :edit, :update, :destroy ]
-
-  # JSON API（ADR 0012）
-  namespace :api do
-    namespace :v1 do
-      resources :sheets, param: :year_month, only: [ :index ] do
-        member do
-          get :settlement
-        end
-        resources :sheet_items, only: [ :create ]
-      end
-    end
+    resources :expenses, only: %i[ new create destroy ], module: :groups
+    resource  :settlement, only: %i[ create ], module: :groups # 精算を確定（スナップショット化）
   end
 
   # PWA関連（デフォルトのまま）

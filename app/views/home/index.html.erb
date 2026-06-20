@@ -1,0 +1,47 @@
+<div class="wt-page">
+  <%# 挨拶ヘッダー %>
+  <header class="flex items-center justify-between mb-4">
+    <div class="min-w-0">
+      <div class="wt-greeting-title truncate"><%= greeting %>、<%= @me_name %></div>
+      <div class="wt-greeting-sub">今夜の精算、サクッと片づけよう</div>
+    </div>
+    <%= avatar_chip(@me_name, Member::COLORS.first, size: 42) %>
+  </header>
+
+  <%# カレンダー %>
+  <%= render "home/calendar" %>
+
+  <%# グループ一覧 %>
+  <div class="wt-section-head">
+    <div class="wt-section-title">グループ <span class="wt-meta"><%= @groups.size %></span></div>
+    <%= link_to "＋ 新規", new_group_path, class: "wt-section-link" %>
+  </div>
+
+  <% if @groups.empty? %>
+    <div class="wt-empty">
+      <span class="wt-empty-icon">🫶</span>
+      <p class="wt-greeting-sub">まだグループがありません。</p>
+    </div>
+  <% end %>
+
+  <% @open_groups.each do |g| %>
+    <%= render "groups/card", group: g, plan: @plans[g.id], me: @me_member[g.id] %>
+  <% end %>
+
+  <% if @settled_groups.any? %>
+    <details class="mt-2">
+      <summary class="wt-settled-head">✓ 精算済み <%= @settled_groups.size %></summary>
+      <div class="mt-2">
+        <% @settled_groups.each do |g| %>
+          <%= render "groups/card", group: g, plan: @plans[g.id], me: @me_member[g.id] %>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+
+  <%= link_to "グループをつくる", new_group_path, class: "wt-gcard-dashed mt-2" %>
+</div>
+
+<% if @groups.any? %>
+  <%= link_to "＋ 割り勘を追加", new_group_expense_path(@groups.first), class: "wt-fab" %>
+<% end %>

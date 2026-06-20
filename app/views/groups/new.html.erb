@@ -1,0 +1,57 @@
+<div class="wt-page">
+  <header class="flex items-center justify-between mb-4">
+    <%= link_to "‹ もどる", (current_user.members.exists? ? root_path : new_session_path), class: "wt-back" %>
+    <%= link_to "招待コードで参加", new_membership_path, class: "wt-section-link" %>
+  </header>
+
+  <h1 class="wt-display mb-1" style="font-size:1.5rem;font-weight:900;">グループをつくる</h1>
+  <p class="wt-greeting-sub mb-4">旅行・飲み会・シェアハウス、なんでも。</p>
+
+  <% if @group.errors.any? %>
+    <div class="wt-alert-box"><%= @group.errors.full_messages.first %></div>
+  <% end %>
+
+  <%= form_with url: groups_path, method: :post, data: { turbo: false } do %>
+    <div class="mb-4">
+      <%= label_tag "group[name]", "グループ名", class: "wt-label" %>
+      <%= text_field_tag "group[name]", @group.name, class: "wt-input", placeholder: "例: 沖縄旅行", autofocus: true %>
+    </div>
+
+    <div class="mb-4">
+      <span class="wt-label">アイコン</span>
+      <div class="flex gap-2 flex-wrap">
+        <% GroupsController::ICONS.each do |ic| %>
+          <label class="wt-icon-pick">
+            <%= radio_button_tag "group[icon]", ic, ic == @group.icon, class: "sr-only" %>
+            <span><%= ic %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mb-5">
+      <span class="wt-label">タイルの色</span>
+      <div class="flex gap-2 flex-wrap">
+        <% Group::TILES.each do |t| %>
+          <label class="wt-tile-pick" style="background: <%= t %>;">
+            <%= radio_button_tag "group[tile]", t, t == @group.tile, class: "sr-only" %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mb-5">
+      <span class="wt-label">メンバー</span>
+      <% slots = (@member_names + Array.new(6, "")).first([ @member_names.size + 1, 4 ].max) %>
+      <% slots.each_with_index do |name, i| %>
+        <div class="mb-2 flex items-center gap-2">
+          <%= text_field_tag "members[]", name, class: "wt-input", placeholder: (i.zero? ? "あなたの名前" : "メンバー#{i + 1}") %>
+          <% if i.zero? %><span class="wt-you-tag" style="flex:none;">あなた</span><% end %>
+        </div>
+      <% end %>
+      <p class="wt-meta">空欄は無視されます。あとから招待・追加もできます。</p>
+    </div>
+
+    <%= submit_tag "このグループをつくる", class: "wt-btn wt-btn-primary" %>
+  <% end %>
+</div>

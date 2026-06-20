@@ -1,0 +1,21 @@
+<%# locals: group, plan, me %>
+<% net = (me && plan.nets[me]).to_i %>
+<%= link_to group_path(group), class: "wt-gcard #{'wt-fresh' if local_assigns[:fresh]}" do %>
+  <span class="wt-tile" style="background: <%= group.tile %>;"><%= group.icon %></span>
+  <div class="min-w-0 flex-1">
+    <div class="wt-gcard-name truncate"><%= group.name %></div>
+    <div class="wt-gcard-sub truncate">
+      <%= group.members.reject { |m| m.name == "共同口座" }.size %>人 ·
+      <%= group.open_expenses.count %>件の記録
+    </div>
+    <div class="mt-1.5"><%= member_stack(group.members.reject { |m| m.name == "共同口座" }) %></div>
+  </div>
+  <div>
+    <div class="wt-balance <%= balance_class(net) %>">
+      <%= net.zero? ? "精算済み" : signed_yen(net) %>
+    </div>
+    <% unless net.zero? %>
+      <div class="wt-balance-cap"><%= net.positive? ? "受け取り" : "支払い" %></div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,31 @@
+<% join_url = new_membership_url(code: @group.invite_code) %>
+<div class="wt-page">
+  <header class="flex items-center mb-4">
+    <%= link_to "‹ もどる", group_path(@group), class: "wt-back" %>
+  </header>
+
+  <div class="wt-card text-center mb-4">
+    <span class="wt-tile mx-auto mb-3" style="width:60px;height:60px;border-radius:18px;font-size:30px;background:<%= @group.tile %>;"><%= @group.icon %></span>
+    <h1 class="wt-display mb-1" style="font-size:1.3rem;font-weight:900;"><%= @group.name %> に招待</h1>
+    <p class="wt-greeting-sub">このコードを相手に共有してください。</p>
+  </div>
+
+  <div class="wt-card-2 mb-4">
+    <div class="wt-label">招待コード</div>
+    <div class="wt-code" style="font-size:1.1rem;"><%= @group.invite_code %></div>
+  </div>
+
+  <div class="wt-card-2 mb-4">
+    <div class="wt-label">参加リンク</div>
+    <div class="wt-code" style="font-size:.85rem;"><%= join_url %></div>
+  </div>
+
+  <% line_text = "「#{@group.name}」#{@group.icon} に参加してね！\n#{join_url}" %>
+  <%= link_to "LINEで招待を送る", "https://line.me/R/share?text=#{CGI.escape(line_text)}",
+        target: "_blank", rel: "noopener", class: "wt-btn wt-btn-line mb-2" %>
+  <div data-controller="copy-text">
+    <textarea data-copy-text-target="source" class="hidden"><%= join_url %></textarea>
+    <button type="button" class="wt-btn wt-btn-ghost" data-action="copy-text#copy">リンクをコピー</button>
+    <p class="wt-meta hidden mt-2 text-center" data-copy-text-target="feedback">コピーしました ✓</p>
+  </div>
+</div>
