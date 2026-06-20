@@ -28,18 +28,20 @@ RSpec.describe "Expenses", type: :request do
 
       expense = Expense.last
       expect(expense.amount).to eq(1000)
+      expect(expense.split_mode).to eq("equal")
       expect(expense.shares.sum(&:amount)).to eq(1000)
       expect(expense.shares.map(&:amount).sort).to eq([ 333, 333, 334 ])
       expect(response).to redirect_to(group_path(group))
     end
 
-    it "金額指定(custom)では指定額をそのまま負担にする" do
+    it "金額指定(custom)では指定額をそのまま負担にし、split_mode を itemized で保存する" do
       post group_expenses_path(group), params: {
         amount: 1000, title: "宿", payer_id: me.id,
         participant_ids: [ me.id, yui.id ], split_mode: "custom",
         shares: { me.id.to_s => 700, yui.id.to_s => 300 }
       }
       expense = Expense.last
+      expect(expense.split_mode).to eq("itemized")
       expect(expense.shares.find_by(member: me).amount).to eq(700)
       expect(expense.shares.find_by(member: yui).amount).to eq(300)
     end
@@ -53,11 +55,43 @@ RSpec.describe "Expenses", type: :request do
   end
 
   describe "DELETE destroy" do
-    it "記録を削除する" do
+    it "未精算の記録を削除する" do
       expense = create(:expense, group: group, payer: me)
       expect {
         delete group_expense_path(group, expense)
       }.to change(Expense, :count).by(-1)
+    end
+
+    it "精算済みの記録は削除できない" do
+      settlement = create(:settlement, group: group)
+      expense = create(:expense, group: group, payer: me, settlement: settlement)
+      expect {
+        delete group_expense_path(group, expense)
+      }.not_to change(Expense, :count)
+      expect(response).to redirect_to(group_path(group))
+      expect(flash[:alert]).to be_present
+    end
+  end
+
+  describe "クロステナント（メンバーでないグループ）" do
+    let(:other_group) { create(:group) }
+    let!(:other_member) { create(:member, group: other_group, name: "他人", sort_order: 0) }
+
+    it "費用を追加できない" do
+      expect {
+        post group_expenses_path(other_group), params: {
+          amount: 500, title: "x", payer_id: other_member.id, participant_ids: [ other_member.id ]
+        }
+      }.not_to change(Expense, :count)
+      expect(response).to redirect_to(root_path)
+    end
+
+    it "費用を削除できない" do
+      expense = create(:expense, group: other_group, payer: other_member)
+      expect {
+        delete group_expense_path(other_group, expense)
+      }.not_to change(Expense, :count)
+      expect(response).to redirect_to(root_path)
     end
   end
 end

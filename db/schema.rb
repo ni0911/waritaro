@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_20_010008) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_20_010009) do
   create_table "expense_shares", force: :cascade do |t|
     t.integer "amount", default: 0, null: false
     t.datetime "created_at", null: false
@@ -43,7 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_20_010008) do
     t.string "icon", default: "🏠", null: false
     t.string "invite_code"
     t.string "kind", default: "general", null: false
-    t.string "name"
+    t.string "name", null: false
     t.bigint "owner_id"
     t.string "tile", default: "#E7D3C2", null: false
     t.datetime "updated_at", null: false

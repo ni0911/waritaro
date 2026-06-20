@@ -26,4 +26,15 @@ RSpec.describe "Settlements", type: :request do
     expect(Settlement.count).to eq(0)
     expect(response).to redirect_to(group_path(group))
   end
+
+  it "メンバーでないグループは精算できない" do
+    other = create(:group)
+    other_member = create(:member, group: other, sort_order: 0)
+    create(:expense, group: other, payer: other_member)
+
+    expect {
+      post group_settlement_path(other)
+    }.not_to change(Settlement, :count)
+    expect(response).to redirect_to(root_path)
+  end
 end

@@ -38,11 +38,11 @@ class MigrateLegacyDataToGroups < ActiveRecord::Migration[8.0]
         settled_at = quote(sheet["created_at"] || Time.current)
         date = quote("#{sheet['year_month']}-01")
 
-        execute(<<~SQL)
+        settlement_id = select_value(<<~SQL)
           INSERT INTO settlements (group_id, settled_at, note, created_at, updated_at)
           VALUES (#{gid}, #{settled_at}, #{quote(sheet['year_month'])}, #{now}, #{now})
+          RETURNING id
         SQL
-        settlement_id = select_value("SELECT id FROM settlements WHERE group_id = #{gid} AND note = #{quote(sheet['year_month'])} ORDER BY id DESC LIMIT 1")
 
         select_all("SELECT id, name, burden_a, burden_b FROM sheet_items WHERE sheet_id = #{sid}").each do |item|
           ba = item["burden_a"].to_i
@@ -50,11 +50,11 @@ class MigrateLegacyDataToGroups < ActiveRecord::Migration[8.0]
           amount = ba + bb
           next if amount <= 0 # 私物(0/0)は精算対象外だったため変換しない
 
-          execute(<<~SQL)
+          expense_id = select_value(<<~SQL)
             INSERT INTO expenses (group_id, payer_id, settlement_id, title, amount, expense_date, split_mode, created_at, updated_at)
             VALUES (#{gid}, #{account_id}, #{settlement_id}, #{quote(item['name'])}, #{amount}, #{date}, 'itemized', #{now}, #{now})
+            RETURNING id
           SQL
-          expense_id = select_value("SELECT id FROM expenses WHERE settlement_id = #{settlement_id} ORDER BY id DESC LIMIT 1")
 
           insert_share(expense_id, member_a_id, ba, now) if ba.positive?
           insert_share(expense_id, member_b_id, bb, now) if bb.positive?

@@ -18,14 +18,14 @@ module Groups
       participants = @group.members.where(id: participant_ids).to_a
       participants = @group.members.to_a if participants.empty?
 
-      shares = build_shares(amount, participants, params[:split_mode], params[:shares])
+      split_mode, shares = build_split(amount, participants, params[:split_mode], params[:shares])
 
       @expense = @group.expenses.new(
         title: title.presence || "割り勘",
         amount: amount,
         payer: payer,
         expense_date: parse_date(params[:expense_date]),
-        split_mode: params[:split_mode].presence_in(Expense::SPLIT_MODES) || "equal"
+        split_mode: split_mode
       )
       shares.each { |member_id, amt| @expense.shares.build(member_id: member_id, amount: amt) }
 
@@ -42,21 +42,29 @@ module Groups
     end
 
     def destroy
-      expense = @group.expenses.find(params[:id])
-      expense.destroy
-      redirect_to group_path(@group), notice: "削除しました"
+      expense = @group.expenses.find_by(id: params[:id])
+      if expense.nil?
+        redirect_to group_path(@group), alert: "記録が見つかりません"
+      elsif expense.settlement_id.present?
+        # 精算済み費用は Settlement スナップショットの一部。削除すると過去の精算結果が変わるため不可。
+        redirect_to group_path(@group), alert: "精算済みの記録は削除できません"
+      else
+        expense.destroy
+        redirect_to group_path(@group), notice: "削除しました"
+      end
     end
 
     private
 
-    # { member_id => amount } を返す。合計は必ず amount に一致させる。
-    def build_shares(amount, participants, mode, custom)
-      return {} if participants.empty? || amount <= 0
+    # [split_mode, { member_id => amount }] を返す。合計は必ず amount に一致させる。
+    # UI は equal / custom を送るが、custom は正規の split_mode "itemized" として保存する。
+    def build_split(amount, participants, mode, custom)
+      return [ "equal", {} ] if participants.empty? || amount <= 0
 
       if mode == "custom" && custom.present?
-        participants.to_h { |m| [ m.id, custom[m.id.to_s].to_i ] }
+        [ "itemized", participants.to_h { |m| [ m.id, custom[m.id.to_s].to_i ] } ]
       else
-        equal_split(amount, participants)
+        [ "equal", equal_split(amount, participants) ]
       end
     end
 
